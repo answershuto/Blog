@@ -5,17 +5,277 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 14 Apr 2016 23:01:06 +0800</pubDate>
-    <lastBuildDate>Thu, 14 Apr 2016 23:01:06 +0800</lastBuildDate>
+    <pubDate>Sat, 16 Apr 2016 20:13:04 +0800</pubDate>
+    <lastBuildDate>Sat, 16 Apr 2016 20:13:04 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
-        <title>test</title>
-        <description>&lt;p&gt;this is a test!&lt;/p&gt;
+        <title>如何用github + jekyll搭建自己的blog</title>
+        <description>&lt;p&gt;本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑，有误之处望请包涵指正。&lt;/p&gt;
+
+&lt;h2 id=&quot;jekyll&quot;&gt;1.jekyll是什么？&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;简单地说jekyll就是一个简单免费的blog生成工具，类似WordPress，但是又不像WordPress一样需要一个php以及mysql部署的后台应用程序。简单来说jekyll可以生成一个静态的blog，它可以部署在Github上，同时也可以绑定自己的域名。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;2.前期准备&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;＊ 一个脚本编辑器 &lt;strong&gt;Sublime Text&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;＊ Terminal(终端)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;＊ Github&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;3.买域名&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;这步我没有做，直接附上&lt;a href=&quot;http://jingyan.baidu.com/article/fec4bce20d364bf2618d8b39.html&quot;&gt;传送门&lt;/a&gt;  (怎样购买GoDaddy域名).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;如果没有购买域名，那建站完成之后只能使用github上默认的域名访问自己的blog&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;例如:&lt;a href=&quot;http://answershuto.github.io/&quot;&gt;http://answershuto.github.io/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;github&quot;&gt;4.注册github创建代码仓库&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;githubhttpjingyanbaiducomarticle455a9950abe0ada167277864html&quot;&gt;1.注册github，这个简单直接上个&lt;a href=&quot;http://jingyan.baidu.com/article/455a9950abe0ada167277864.html&quot;&gt;传送门&lt;/a&gt;.&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;section-2&quot;&gt;2.创建代码仓库&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;[1]登录&lt;a href=&quot;https://github.com&quot;&gt;Github&lt;/a&gt;&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;[2]创建代码仓库&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;&lt;img src=&quot;/img/jekyllBuild/newRepositery.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;[3]将仓库名字命名为userName.github.io，之后会用这个域名访问自己的blog，比如为这一使用了&lt;a href=&quot;http://answershuto.github.io/&quot;&gt;answershuto.github.io&lt;/a&gt;&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;&lt;img src=&quot;/img/jekyllBuild/RepositeryName.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;[4]点击Create repository&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;jekyll-1&quot;&gt;5.搭建本地调适环境以及安装jekyll&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;macosxrubyjekyll&quot;&gt;1.由于为的mac环境osX上面已经自带的了Ruby的环境，所以直接安装jekyll&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;gem-install-jekyll&quot;&gt;2.打开终端，执行  $gem install jekyll&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;第一次搭建环境的时候完全不知道怎么搞啊，运行的时候一直报错，在网上找了好多方法，有的说要用翻墙啊什么的，最后使用了淘宝镜像解决了。&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;jekyll-new-blog--jekyllbloggithubhttpjekyllthemesorggit-cloneforkgithub&quot;&gt;3.在终端执行  $ jekyll new blog  可以新建一个jekyll生成的blog，当然也可以从网上或者github上找一些别人提供的开源模板，效果都不错，提供一个&lt;a href=&quot;http://jekyllthemes.org&quot;&gt;传送门&lt;/a&gt;,用git clone到本地，或者是fork到自己的github上。&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;github-1&quot;&gt;4.将本地项目上传到之前建立的github代码仓库上。&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;$git init&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;$git add README.md&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;$git commit -m “first commit”&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;$git remote add origin https://github.com/answershuto/answershuto.github.io.git&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;$git push -u origin master&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;usernamegithubioanswershutogithubiohttpanswershutogithubio&quot;&gt;5.在浏览器中输入 userName.github.io即可,例如&lt;a href=&quot;http://answershuto.github.io/&quot;&gt;answershuto.github.io&lt;/a&gt;&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;section-3&quot;&gt;6.本地调适&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;进入之前jekyll new blog 生成的目录下或者是git clone出来的目录下，&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;$cd blog&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;执行 $jekyll serve&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;在浏览器中输入 localhost:4000  (注：jekyll默认用4000端口，可以在配置中修改该端口号)&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;blogblog&quot;&gt;接下来就可以愉快地修改自己blog的代码，打造一个自己喜欢风格的blog了.&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;jekyll-2&quot;&gt;6.jekyll博客基本用法&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;jekull&quot;&gt;1.jekull目录结构&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;_site目录是最终自动生成的目录.&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;_post目录为存放文章的目录，存放的格式为 年－月－日－题目.MarkDown.&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;_layouts目录为布局文件存放目录.&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;_includes目录存放一些组件，在其他文件中可以引用该目录中的文件&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;_config.yml存储全局配置&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
 </description>
-        <pubDate>Sun, 10 Apr 2016 11:07:29 +0800</pubDate>
-        <link>/jekyll/update/2016/04/10/test.html</link>
-        <guid isPermaLink="true">/jekyll/update/2016/04/10/test.html</guid>
+        <pubDate>Sun, 10 Apr 2016 23:14:00 +0800</pubDate>
+        <link>/jekyll/update/2016/04/10/jekyllBuild.html</link>
+        <guid isPermaLink="true">/jekyll/update/2016/04/10/jekyllBuild.html</guid>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
+    
+      <item>
+        <title>test MD</title>
+        <description>&lt;p&gt;本文主要记录一下自己在用jekyll搭建个人博客的过程以及遇到的一些坑&lt;/p&gt;
+
+&lt;h1 id=&quot;jekyll&quot;&gt;为什么要使用jekyll？&lt;/h1&gt;
+
+&lt;h2 id=&quot;aaaaaa&quot;&gt;aaaaaa&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;test&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;test&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;222&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;test&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;/&lt;em&gt;分割线&lt;/em&gt;/&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Red&lt;/li&gt;
+  &lt;li&gt;Green&lt;/li&gt;
+  &lt;li&gt;Blue&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/test.png&quot; alt=&quot;img&quot; title=&quot;图片&quot; /&gt; aa.&lt;/p&gt;
+
+&lt;p&gt;this is &lt;a href=&quot;http://www.baidu.com&quot;&gt;baidu&lt;/a&gt; .&lt;/p&gt;
+
+&lt;p&gt;‘console.log(“aaa”)’&lt;/p&gt;
+</description>
+        <pubDate>Sat, 09 Apr 2016 23:10:00 +0800</pubDate>
+        <link>/jekyll/update/2016/04/09/test.html</link>
+        <guid isPermaLink="true">/jekyll/update/2016/04/09/test.html</guid>
         
         
         <category>jekyll</category>

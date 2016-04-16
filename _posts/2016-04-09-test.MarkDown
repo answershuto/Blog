@@ -1,0 +1,36 @@
+---
+layout: post
+title:  "test MD"
+date:   2016-04-9 23:10:00 +0800
+categories: jekyll update
+---
+
+本文主要记录一下自己在用jekyll搭建个人博客的过程以及遇到的一些坑
+
+为什么要使用jekyll？
+=======
+
+aaaaaa
+-----
+
+>test  
+
+>test
+
+>>222
+
+>test
+
+/*分割线*/
+
+***
+
+*   Red
+*   Green
+*   Blue
+
+![img](/img/test.png "图片") aa.
+
+this is [baidu](http://www.baidu.com) .
+
+'console.log("aaa")'
