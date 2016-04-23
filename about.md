@@ -5,20 +5,23 @@ subtitle: 自由、开放、合作、共享
 permalink: /about/
 ---
 
-<h2><strong>关注领域：</strong></h2>
+## 简介:
 
-<h4>前端开发、linux嵌入式技术</h4>
+>#### 我是染陌，一只对新事物充满好奇的开发者，目前从事前端开发以及linux应用开发工作。
 
-<br>
+<br><br>
 
-<h2><strong>联系方式: </strong></h2>
+## 关注领域：
 
-<ul>
-	<h4>Github: <a href="https://github.com/answershuto">https://github.com/answershuto</a></h4>
-</ul>
-<ul>
-	<h4>Email: <a href="answershuto@126.com">answershuto@126.com</a></h4>
-</ul>
+>#### 前端开发、Node.js、linux嵌入式技术。
+
+<br><br>
+
+## 联系方式:
+
+>#### Github: [https://github.com/answershuto](https://github.com/answershuto)
+
+>#### Email: [answershuto@126.com](answershuto@126.com)
 
 
 

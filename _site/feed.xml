@@ -5,13 +5,163 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 16 Apr 2016 20:13:04 +0800</pubDate>
-    <lastBuildDate>Sat, 16 Apr 2016 20:13:04 +0800</lastBuildDate>
+    <pubDate>Sat, 23 Apr 2016 20:52:08 +0800</pubDate>
+    <lastBuildDate>Sat, 23 Apr 2016 20:52:08 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
+        <title>我对javascript继承的理解</title>
+        <description>&lt;p&gt;记录一下学习js继承的学习心得，有误之处欢迎指正。&lt;/p&gt;
+
+&lt;p&gt;javascript中的继承主要通过原型链的方式来实现，简单地说也就是对象a所指向的原型A是原型B的一个实例b，即B的实例是a所指向的原型。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;借用构造函数&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/js继承/借用构造函数.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;这种继承方式的弊端显而易见，数据以及方法都必须定义在基类的构造函数中，在派生类中用call改变执行环境时，基类的数据以及方法会生成在派生类中，即this。但是如果在基类的原型中定义的方法以及数据，就无法在派生类中得到继承。将所有的方法以及数据都定义在构造函数中，也就没有什么封装可言了。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;原型式继承&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/js继承/原型式继承.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;原型继承主要通过Object.create()方法，构建一个新的派生类对象并使其原型指向基类。其函数内容可以描述为&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;function object(o){&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;function F();&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;F.prototype = o;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;return F;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;};&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;这种方法使得基类中的引用变量得到了共用，可以使得对象保持相似。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;组合继承&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;js里面最常用的继承方法&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;上代码：&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/js继承/组合继承.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在派生类中调用基类的构造函数，如果不那么做会导致所有基类的成员及方法都属于原型，那么这些成员和方法都是“公有”的，也就是所有的派生类都指向同一块内存（这里就是原型），导致某一个派生类对象修改了基类中的成员数据会导致所有派生类的数据都改变。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;针对上述这个问题，在派生类中用call来执行基类的构造函数，使得基类的执行环境处于派生类，即this的指向改变。这样可以有效地防止出现由于基类对象作为原型导致基类对象中的引用对象产生的派生类实例所有引用对象都指向同一个对象的问题。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;组合式继承也有自己的弊端，在创建基类实例以及在派生类的构造函数中会两次调用基类的构造函数，第二次会覆盖第一次掉用时创建的对象及方法。&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在派生类的构造函数中初始化派生实例自己的成员&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;寄生式继承&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/js继承/寄生式继承.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;寄生式继承相当于克隆了基类对象。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-4&quot;&gt;寄生组合式继承&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/js继承/继承组合继承.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;由于组合式继承会在创建时两次掉用基类的构造函数构造基类的对象，所以综合寄生式继承，产生了寄生组合式继承。&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
+
+</description>
+        <pubDate>Wed, 20 Apr 2016 22:31:00 +0800</pubDate>
+        <link>/jekyll/update/2016/04/20/%E6%88%91%E5%AF%B9javascript%E7%BB%A7%E6%89%BF%E7%9A%84%E7%90%86%E8%A7%A3.html</link>
+        <guid isPermaLink="true">/jekyll/update/2016/04/20/%E6%88%91%E5%AF%B9javascript%E7%BB%A7%E6%89%BF%E7%9A%84%E7%90%86%E8%A7%A3.html</guid>
+        
+        <category>javascript 前端</category>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
+    
+      <item>
         <title>如何用github + jekyll搭建自己的blog</title>
-        <description>&lt;p&gt;本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑，有误之处望请包涵指正。&lt;/p&gt;
+        <description>&lt;p&gt;本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑，&lt;br /&gt;有误之处望请包涵指正。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;blockquote&gt;
+    &lt;p&gt;&lt;img src=&quot;/img/jekyllBuild/octojekyll.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+  &lt;/blockquote&gt;
+&lt;/blockquote&gt;
 
 &lt;h2 id=&quot;jekyll&quot;&gt;1.jekyll是什么？&lt;/h2&gt;
 
@@ -77,7 +227,7 @@
 
 &lt;blockquote&gt;
   &lt;blockquote&gt;
-    &lt;p&gt;[3]将仓库名字命名为userName.github.io，之后会用这个域名访问自己的blog，比如为这一使用了&lt;a href=&quot;http://answershuto.github.io/&quot;&gt;answershuto.github.io&lt;/a&gt;&lt;/p&gt;
+    &lt;p&gt;[3]将仓库名字命名为userName.github.io，之后会用这个域名访问自己的blog，比如我这里使用了&lt;a href=&quot;http://answershuto.github.io/&quot;&gt;answershuto.github.io&lt;/a&gt;&lt;/p&gt;
   &lt;/blockquote&gt;
 &lt;/blockquote&gt;
 
@@ -114,7 +264,7 @@
 &lt;/blockquote&gt;
 
 &lt;blockquote&gt;
-  &lt;h3 id=&quot;github-1&quot;&gt;4.将本地项目上传到之前建立的github代码仓库上。&lt;/h3&gt;
+  &lt;h3 id=&quot;githubgithub&quot;&gt;4.将本地项目上传到之前建立的github代码仓库上。(注：发布到Github上后可能需要有一段时间的延迟才可以访问)&lt;/h3&gt;
 &lt;/blockquote&gt;
 
 &lt;blockquote&gt;
@@ -152,7 +302,7 @@
 &lt;/blockquote&gt;
 
 &lt;blockquote&gt;
-  &lt;h3 id=&quot;section-3&quot;&gt;6.本地调适&lt;/h3&gt;
+  &lt;h3 id=&quot;section-3&quot;&gt;6.本地调试&lt;/h3&gt;
 &lt;/blockquote&gt;
 
 &lt;blockquote&gt;
@@ -219,63 +369,19 @@
   &lt;/blockquote&gt;
 &lt;/blockquote&gt;
 
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;markdonw-httpwowubuntucommarkdownphilosophy&quot;&gt;2.MarkDonw语法 附上学习&lt;a href=&quot;http://wowubuntu.com/markdown/#philosophy&quot;&gt;传送门&lt;/a&gt;&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;h3 id=&quot;blog&quot;&gt;3.接下来就可以根据一些前端的支持修改自己的页面，定制自己专属风格的blog。&lt;/h3&gt;
+&lt;/blockquote&gt;
 </description>
         <pubDate>Sun, 10 Apr 2016 23:14:00 +0800</pubDate>
         <link>/jekyll/update/2016/04/10/jekyllBuild.html</link>
         <guid isPermaLink="true">/jekyll/update/2016/04/10/jekyllBuild.html</guid>
         
-        
-        <category>jekyll</category>
-        
-        <category>update</category>
-        
-      </item>
-    
-      <item>
-        <title>test MD</title>
-        <description>&lt;p&gt;本文主要记录一下自己在用jekyll搭建个人博客的过程以及遇到的一些坑&lt;/p&gt;
-
-&lt;h1 id=&quot;jekyll&quot;&gt;为什么要使用jekyll？&lt;/h1&gt;
-
-&lt;h2 id=&quot;aaaaaa&quot;&gt;aaaaaa&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;test&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;test&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;222&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;test&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;/&lt;em&gt;分割线&lt;/em&gt;/&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Red&lt;/li&gt;
-  &lt;li&gt;Green&lt;/li&gt;
-  &lt;li&gt;Blue&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/test.png&quot; alt=&quot;img&quot; title=&quot;图片&quot; /&gt; aa.&lt;/p&gt;
-
-&lt;p&gt;this is &lt;a href=&quot;http://www.baidu.com&quot;&gt;baidu&lt;/a&gt; .&lt;/p&gt;
-
-&lt;p&gt;‘console.log(“aaa”)’&lt;/p&gt;
-</description>
-        <pubDate>Sat, 09 Apr 2016 23:10:00 +0800</pubDate>
-        <link>/jekyll/update/2016/04/09/test.html</link>
-        <guid isPermaLink="true">/jekyll/update/2016/04/09/test.html</guid>
+        <category>jekyll 前端</category>
         
         
         <category>jekyll</category>

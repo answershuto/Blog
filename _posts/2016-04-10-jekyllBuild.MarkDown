@@ -3,10 +3,15 @@ layout: post
 title:  "如何用github + jekyll搭建自己的blog"
 date:   2016-04-10 23:14:00 +0800
 categories: jekyll update
+tags: [jekyll 前端] 
+excerpt: 本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑.
 ---
 
-本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑，有误之处望请包涵指正。
 
+
+本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑，<br>有误之处望请包涵指正。
+
+>>![img](/img/jekyllBuild/octojekyll.png) 
 
 1.jekyll是什么？
 ---
@@ -48,7 +53,7 @@ categories: jekyll update
 
 >>![img](/img/jekyllBuild/newRepositery.png ) 
 
->>[3]将仓库名字命名为userName.github.io，之后会用这个域名访问自己的blog，比如为这一使用了[answershuto.github.io](http://answershuto.github.io/)
+>>[3]将仓库名字命名为userName.github.io，之后会用这个域名访问自己的blog，比如我这里使用了[answershuto.github.io](http://answershuto.github.io/)
 
 >>![img](/img/jekyllBuild/RepositeryName.png )
 
@@ -66,7 +71,7 @@ categories: jekyll update
 
 >### 3.在终端执行  $ jekyll new blog  可以新建一个jekyll生成的blog，当然也可以从网上或者github上找一些别人提供的开源模板，效果都不错，提供一个[传送门](http://jekyllthemes.org),用git clone到本地，或者是fork到自己的github上。
 
->### 4.将本地项目上传到之前建立的github代码仓库上。
+>### 4.将本地项目上传到之前建立的github代码仓库上。(注：发布到Github上后可能需要有一段时间的延迟才可以访问)
 
 >> $git init
 
@@ -80,7 +85,7 @@ categories: jekyll update
 
 >### 5.在浏览器中输入 userName.github.io即可,例如[answershuto.github.io](http://answershuto.github.io/)
 
->### 6.本地调适
+>### 6.本地调试
 
 >> 进入之前jekyll new blog 生成的目录下或者是git clone出来的目录下，
 
@@ -108,3 +113,6 @@ categories: jekyll update
 
 >> _config.yml存储全局配置 
 
+>### 2.MarkDonw语法 附上学习[传送门](http://wowubuntu.com/markdown/#philosophy)
+
+>### 3.接下来就可以根据一些前端的支持修改自己的页面，定制自己专属风格的blog。
