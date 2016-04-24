@@ -18,7 +18,7 @@ subtitle: 拥抱开源，乐于分享，<br>将互联网精神进行到底。
   {% for post in site.posts %}
     <article class="post-item container">
       <header>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}&nbsp&nbsp&nbsptags: {{ post.tags }}</span>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}<br>tags: {{ post.tags }}</span>
         <h1 class="post-title">
           <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
         </h1>

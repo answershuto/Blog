@@ -5,8 +5,8 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 24 Apr 2016 09:32:42 +0800</pubDate>
-    <lastBuildDate>Sun, 24 Apr 2016 09:32:42 +0800</lastBuildDate>
+    <pubDate>Sun, 24 Apr 2016 10:26:04 +0800</pubDate>
+    <lastBuildDate>Sun, 24 Apr 2016 10:26:04 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -201,7 +201,7 @@
         <link>/jekyll/update/2016/04/20/%E6%88%91%E5%AF%B9javascript%E7%BB%A7%E6%89%BF%E7%9A%84%E7%90%86%E8%A7%A3.html</link>
         <guid isPermaLink="true">/jekyll/update/2016/04/20/%E6%88%91%E5%AF%B9javascript%E7%BB%A7%E6%89%BF%E7%9A%84%E7%90%86%E8%A7%A3.html</guid>
         
-        <category>javascript 前端</category>
+        <category>javascript</category>
         
         
         <category>jekyll</category>
