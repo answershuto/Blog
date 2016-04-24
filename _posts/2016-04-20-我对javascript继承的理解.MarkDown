@@ -27,15 +27,11 @@ javascript中的继承主要通过原型链的方式来实现，简单地说也�
 
 >原型继承主要通过Object.create()方法，构建一个新的派生类对象并使其原型指向基类。其函数内容可以描述为
 
->>function object(o){
-
->>>function F();
-
->>>F.prototype = o;
-	
->>>return F;
-
->>};
+	function object(o){
+		function F();
+		F.prototype = 0;
+		return F;
+	}
 
 >这种方法使得基类中的引用变量得到了共用，可以使得对象保持相似。
 

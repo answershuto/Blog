@@ -5,9 +5,94 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 23 Apr 2016 23:10:05 +0800</pubDate>
-    <lastBuildDate>Sat, 23 Apr 2016 23:10:05 +0800</lastBuildDate>
+    <pubDate>Sun, 24 Apr 2016 09:32:42 +0800</pubDate>
+    <lastBuildDate>Sun, 24 Apr 2016 09:32:42 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>git常用命令</title>
+        <description>&lt;h2 id=&quot;markgit&quot;&gt;mark一些常用的git命令&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;由于最近开始玩Github了，所以在这里记录一下经常用到的git命令，主要为了自己方便查找也希望可以为阅读本文的人带来一点点便利，如有误欢迎指正。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;更详细可以参考《Git版本控制管理》，这是一本好书，不过里面的很多目前我还用不到。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;table border=&quot;1&quot;&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git remote add upstream https://github.com/xxxxxx/xxxxxx.git&lt;/td&gt;
+	  &lt;td&gt;新建分支并存放别人的repository&lt;/td&gt;
+	&lt;/tr&gt;   
+	&lt;tr&gt;
+	  &lt;td&gt;git clone https://github.com/answershuto/answershuto.github.io&lt;/td&gt;
+	  &lt;td&gt;克隆到本地&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git status&lt;/td&gt;
+	  &lt;td&gt;查看状态&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git log&lt;/td&gt;
+	  &lt;td&gt;查看git提交日志&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git add .&lt;/td&gt;
+	  &lt;td&gt;添加所有本地文件&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git add filename&lt;/td&gt;
+	  &lt;td&gt;添加某一个文件&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git remove  fileName&lt;/td&gt;
+	  &lt;td&gt;删除文件&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git push&lt;/td&gt;
+	  &lt;td&gt;提交到服务器上&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git pull origin master&lt;/td&gt;
+	  &lt;td&gt;从服务器上拉取信息&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git branch -a&lt;/td&gt;
+	  &lt;td&gt;查看所有分支&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git branch -r &lt;/td&gt;
+	  &lt;td&gt;查看所有远程分支&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git branch -d XXX&lt;/td&gt;
+	  &lt;td&gt;删除分支&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git branch XXX&lt;/td&gt;
+	  &lt;td&gt;新建分支&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+	  &lt;td&gt;git checkout XXX&lt;/td&gt;
+	  &lt;td&gt;切换分支&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;
+
+</description>
+        <pubDate>Sat, 23 Apr 2016 23:32:00 +0800</pubDate>
+        <link>/jekyll/update/2016/04/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html</link>
+        <guid isPermaLink="true">/jekyll/update/2016/04/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html</guid>
+        
+        <category>git</category>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
     
       <item>
         <title>我对javascript继承的理解</title>
@@ -39,41 +124,13 @@
   &lt;p&gt;原型继承主要通过Object.create()方法，构建一个新的派生类对象并使其原型指向基类。其函数内容可以描述为&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;function object(o){&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;blockquote&gt;
-      &lt;p&gt;function F();&lt;/p&gt;
-    &lt;/blockquote&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;blockquote&gt;
-      &lt;p&gt;F.prototype = o;&lt;/p&gt;
-    &lt;/blockquote&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;blockquote&gt;
-      &lt;p&gt;return F;&lt;/p&gt;
-    &lt;/blockquote&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;};&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function object(o){
+	function F();
+	F.prototype = 0;
+	return F;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;这种方法使得基类中的引用变量得到了共用，可以使得对象保持相似。&lt;/p&gt;
