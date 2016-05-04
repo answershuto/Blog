@@ -4,7 +4,7 @@ title:  "我对javascript继承的理解"
 date:   2016-04-20 22:31:00 +0800
 categories: jekyll update
 tags: [javascript] 
-excerpt: 随手纪录一下学习js继承的学习心得
+excerpt: 随手纪录一下学习js继承的学习心得.
 ---
 
 记录一下学习js继承的学习心得，有误之处欢迎指正。

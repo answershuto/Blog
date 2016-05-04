@@ -4,7 +4,7 @@ title:  "git常用命令"
 date:   2016-04-23 23:32:00 +0800
 categories: jekyll update
 tags: [git]
-excerpt: mark一些git的常用命令
+excerpt: mark一些git的常用命令.
 ---
 
 ## mark一些常用的git命令
