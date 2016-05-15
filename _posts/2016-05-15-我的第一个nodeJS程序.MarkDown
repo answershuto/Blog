@@ -4,7 +4,7 @@ title:  "我的第一个nodeJS程序"
 date:   2016-05-15 20:37:00 +0800
 categories: jekyll update
 tags: [nodeJS]
-excerpt: MongoDB的安装搭建过程以及启动方法的记录.
+excerpt: 记录自己的第一个nodeJS项目的学习过程输出，以及对源码的分析。
 ---
 
 最近开始学习nodeJS，简单学习了一下之后开始搭建自己的第一个nodeJS程序，把整个流程梳理了一下。
