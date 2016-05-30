@@ -4,7 +4,7 @@ title:  "我的第一个nodeJS程序"
 date:   2016-05-15 20:37:00 +0800
 categories: jekyll update
 tags: [nodeJS]
-excerpt: 记录自己的第一个nodeJS项目的学习过程输出，以及对源码的分析。
+excerpt: 记录自己的第一个nodeJS项目的学习过程输出，以及对源码的分析.
 ---
 
 最近开始学习nodeJS，简单学习了一下之后开始搭建自己的第一个nodeJS程序，把整个流程梳理了一下。
@@ -71,6 +71,8 @@ excerpt: 记录自己的第一个nodeJS项目的学习过程输出，以及对�
 前端发过来的请求，根据路由会在news.server.routes.js中做判断，app.route方法为后端代码添加支持不同的路由，根据不同路有掉用不同Controller代码进行数据库操作，进行数据的增删改查，然后将得到的信息或者结果通过res参数返回。整个http请求也就完成了。
 
 我在路由代码中加入了‘／’的判断，在为根目录时返回index.html页面。调用require('fs').readFile读取html文件并将它写入到res中。一开始用require('fs').readFile直接将路径写成了'../../index.html'，后来才发现它的路径是根据程序运行的路径而不是当前文件的路径，用__dirname的到当前文件路径即可。
+
+更新：后来改为了用ejs来渲染前端页面。
 
 <br><br>
 
