@@ -5,9 +5,46 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 05 Jun 2016 20:29:17 +0800</pubDate>
-    <lastBuildDate>Sun, 05 Jun 2016 20:29:17 +0800</lastBuildDate>
+    <pubDate>Sat, 18 Jun 2016 11:48:21 +0800</pubDate>
+    <lastBuildDate>Sat, 18 Jun 2016 11:48:21 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>用safari对移动设备进行远程调试</title>
+        <description>&lt;p&gt;因为在写一个基于移动设备陀螺仪功能的小游戏，所以遇到了这个移动设备调试的问题，在网上找到了用safari远程调试的方法，记录一下。&lt;/p&gt;
+
+&lt;p&gt;工具：Mac iPhone&lt;/p&gt;
+
+&lt;p&gt;1.首先需要在iPhone上打开Safari的远程调试功能，进入“设置”-&amp;gt;“Safari”-&amp;gt;“高级选项”中开启Web检查器。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/Safari/iphone.PNG&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;2.打开Safari开启需要调试的网页。&lt;/p&gt;
+
+&lt;p&gt;3.用数据线连接Mac，打开Mac上的Safari，如果没有开启开发者选项的话需要先开启开发者选项（点击Safari的偏好设置-&amp;gt;高级-&amp;gt;勾选“在菜单栏中显示“开发”菜单”，这样开发菜单就会出现了）。然后在开发菜单中选择刚才的iPhone设备（这里应该是显示的是别名）。接着就可以用Web检查器愉快地调试了。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/Safari/kaifa.PNG&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/Safari/tiaoshi.PNG&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        <pubDate>Fri, 17 Jun 2016 23:40:00 +0800</pubDate>
+        <link>/jekyll/update/2016/06/17/%E7%94%A8safari%E5%AF%B9%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95.html</link>
+        <guid isPermaLink="true">/jekyll/update/2016/06/17/%E7%94%A8safari%E5%AF%B9%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95.html</guid>
+        
+        <category>远程调试</category>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
     
       <item>
         <title>用canvas＋jquery实现贪吃蛇游戏</title>
