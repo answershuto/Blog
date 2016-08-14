@@ -5,8 +5,8 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 18 Jun 2016 11:48:21 +0800</pubDate>
-    <lastBuildDate>Sat, 18 Jun 2016 11:48:21 +0800</lastBuildDate>
+    <pubDate>Sat, 13 Aug 2016 12:39:13 +0800</pubDate>
+    <lastBuildDate>Sat, 13 Aug 2016 12:39:13 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -26,11 +26,11 @@
 &lt;p&gt;3.用数据线连接Mac，打开Mac上的Safari，如果没有开启开发者选项的话需要先开启开发者选项（点击Safari的偏好设置-&amp;gt;高级-&amp;gt;勾选“在菜单栏中显示“开发”菜单”，这样开发菜单就会出现了）。然后在开发菜单中选择刚才的iPhone设备（这里应该是显示的是别名）。接着就可以用Web检查器愉快地调试了。&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/Safari/kaifa.PNG&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/Safari/kaifa.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/Safari/tiaoshi.PNG&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/Safari/tiaoshi.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 </description>
         <pubDate>Fri, 17 Jun 2016 23:40:00 +0800</pubDate>
