@@ -5,9 +5,313 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 28 Aug 2016 21:29:33 +0800</pubDate>
-    <lastBuildDate>Sun, 28 Aug 2016 21:29:33 +0800</lastBuildDate>
+    <pubDate>Wed, 26 Oct 2016 22:40:28 +0800</pubDate>
+    <lastBuildDate>Wed, 26 Oct 2016 22:40:28 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>养只爬虫当宠物（Node.js爬虫爬取58同城租房信息）</title>
+        <description>&lt;p&gt;先上一个源代码吧。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/answershuto/Rental&quot;&gt;https://github.com/answershuto/Rental&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;欢迎指导交流。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;nodejs&quot;&gt;搭建Node.js环境及启动服务&lt;/h2&gt;
+
+&lt;p&gt;安装node以及npm，用express模块启动服务，加入自己所需要的中间件即可，这个不是本文所要讨论的重点，可以参考网上的一些教程搭建环境。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;url&quot;&gt;获取导航页URL以及数据&lt;/h2&gt;
+
+&lt;p&gt;打开58同城主页，我主要针对杭州的二手房进行了爬取分析，所以进入杭州租房。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://hz.58.com/chuzu/pn1/?key=%E6%9D%AD%E5%B7%9E%E7%A7%9F%E6%88%BF%E5%AD%90&amp;amp;cmcskey=%E7%A7%9F%E6%88%BF%E5%AD%90&amp;amp;final=1&amp;amp;PGTID=0d3090a7-0004-f43c-ee04-95c2ea3d031f&amp;amp;ClickID=6&quot;&gt;http://hz.58.com/chuzu/pn1/?key=%E6%9D%AD%E5%B7%9E%E7%A7%9F%E6%88%BF%E5%AD%90&amp;amp;cmcskey=%E7%A7%9F%E6%88%BF%E5%AD%90&amp;amp;final=1&amp;amp;PGTID=0d3090a7-0004-f43c-ee04-95c2ea3d031f&amp;amp;ClickID=6&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;可以得到这一串URL，上下页查看后就不难发现，pn后面的数字就是页面的页码，？后面的是一些get请求带带参数。用一个函数即可通过页码得到正确的URL。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function getUrl(page = 1){
+	return  &#39;http://hz.58.com/chuzu/pn&#39;+page+&#39;/?key=%E6%9D%AD%E5%B7%9E%E7%A7%9F%E6%88%BF%E5%AD%90&amp;amp;cmcskey=%E7%A7%9F%E6%88%BF%E5%AD%90&amp;amp;final=1&amp;amp;PGTID=0d3090a7-0004-f43c-ee04-95c2ea3d031f&amp;amp;ClickID=6&#39;;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;根据上面的URL我们就可以访问到每一页的所有租房信息&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/58Crawler/1.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;cheeriodom&quot;&gt;用cheerio模块解析dom&lt;/h2&gt;
+
+&lt;p&gt;安装cheerio模块，使用cheerio模块解析dom，然后就可以类似jquery一样访问dom了。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var cheerio = require(&#39;cheerio&#39;);
+let $ = cheerio.load(html);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;url-1&quot;&gt;获取每个租房信息的URL&lt;/h2&gt;
+
+&lt;p&gt;打开开发者模式，osX（option + command + I），windows（ F12 ），然后就可以在elements中看到文档结构了。（这里以chrome为例）&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/58Crawler/2.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;可以看到对应的a标签，我们只需要提取出该url即可，及对应的href，就是它点击跳转的URL。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;a href=&quot;http://jump.jinpai.58.com/service?target=INKicKZPP1UEhIHuBQyP3HVk6MOpffA1WNsEqTYuc2Gxa8zCQdEBOnSPwy7LRseGN-7sgB3XvvZTQ9JsSXvXBXOVP5s7-iWzO-jZ_WBRroCl_ZiBHb5v6-MxytthrUmoPF7B-ffISZByBLAX8fznJUcUsuV6KVKc9zyglbYlX_Ws57NkdXRy7vg4euiIN6TsyENc8bJRhqs&amp;amp;amp;local=79&amp;amp;amp;pubid=4204776&amp;amp;amp;version=A&amp;amp;amp;psid=179352405193657452887456131&amp;amp;amp;entinfo=27800613387971_0&amp;amp;amp;apptype=0 &quot; target=&quot;_blank&quot; class=&quot;t&quot; onclick=&quot;clickLog(&#39;from=fcpc_zflist_gzcount&#39;);&quot;&amp;gt;[单间]支持月付 文一路梧桐公寓 耀江文萃苑 中豪晴元&amp;lt;/a&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;该a标签的class为t，用$(‘a.t’)即可得到所有的a标签的对象，得到的是一个数组，遍历取出href属性即可。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for(let i = 0; i &amp;lt; $(&#39;a.t&#39;).length; i++){
+	rentalObj.add($(&#39;a.t&#39;)[i].attribs.href)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;得到了这些URL，接下来就可以用这些URL访问具体的租房信息了，每个URL对应一个租房页面。&lt;/p&gt;
+
+&lt;h2 id=&quot;url-2&quot;&gt;根据租房信息的URL访问相应页面，爬取数据&lt;/h2&gt;
+
+&lt;p&gt;还是先进入页面打开开发者模式。&lt;/p&gt;
+
+&lt;p&gt;这次我们需要解析房屋所在地信息，用来可视化显示。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/58Crawler/3.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$(&#39;td.house-xqxq-content a.ablue&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;加上父标签可以过滤出更有针对性的dom，此时过滤出的是小区名称、本月均价、所在商圈等信息的dom，我们现在只需要第一个dom里面的数据，所以访问数组的[0]即可。&lt;/p&gt;
+
+&lt;p&gt;除此之外为还需要页面里面的一张展示房屋信息的一张图片，找到对应dom可以发现id为smainPic。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$(&#39;#smainPic&#39;)[&#39;0&#39;].attribs.src 这样访问即可得到图片的URL。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;其他我们还可以用同样的方法获取很多相关数据，比如$(‘.house-price’).text()得到价格数据，$(‘span.tel-num.tel-font’).text()可以得到房东的联系方式。&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;通过百度地图进行可视化展示&lt;/h2&gt;
+
+&lt;p&gt;这里使用百度地图api
+&lt;a href=&quot;http://lbsyun.baidu.com/index.php?title=jspopular&quot;&gt;http://lbsyun.baidu.com/index.php?title=jspopular&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var map = new BMap.Map(&quot;container&quot;);          // 创建地图实例  
+map.centerAndZoom(&quot;杭州&quot;, 12);
+var localSearch = new BMap.LocalSearch(map);
+localSearch.setSearchCompleteCallback(function(searchResult){
+	var poi = searchResult.getPoi(0);/*地理位置信息*/
+})
+ocalSearch.search(params[url].location);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;获取经纬度以后再掉用相应的api在地图上显示即可，显示后再做什么效果，可自行发挥想象了。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;效果图&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/58Crawler/4.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/58Crawler/5.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/58Crawler/6.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/58Crawler/7.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/58Crawler/8.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        <pubDate>Tue, 25 Oct 2016 22:23:00 +0800</pubDate>
+        <link>/jekyll/update/2016/10/25/%E5%85%BB%E5%8F%AA%E7%88%AC%E8%99%AB%E5%BD%93%E5%AE%A0%E7%89%A9-Node.js%E7%88%AC%E8%99%AB%E7%88%AC%E5%8F%9658%E5%90%8C%E5%9F%8E%E7%A7%9F%E6%88%BF%E4%BF%A1%E6%81%AF.html</link>
+        <guid isPermaLink="true">/jekyll/update/2016/10/25/%E5%85%BB%E5%8F%AA%E7%88%AC%E8%99%AB%E5%BD%93%E5%AE%A0%E7%89%A9-Node.js%E7%88%AC%E8%99%AB%E7%88%AC%E5%8F%9658%E5%90%8C%E5%9F%8E%E7%A7%9F%E6%88%BF%E4%BF%A1%E6%81%AF.html</guid>
+        
+        <category>Node.js、网络爬虫、百度地图</category>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
+    
+      <item>
+        <title>Node.js实现图片上传</title>
+        <description>&lt;p&gt;今天在开发&lt;a href=&quot;https://github.com/answershuto/Note.git&quot;&gt;染陌云笔记&lt;/a&gt;要实现图片上传来修改头像，在网上找资料尝试了很多方法以后最后只有这种方法管用，记录一下。&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;首先是后端对实现&lt;/h2&gt;
+
+&lt;p&gt;使用了这些中间件&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var app = express();
+
+app.set(&#39;view engine&#39;,&#39;ejs&#39;);
+app.use(express.static(__dirname+&#39;/../views&#39;));
+
+app.use(bodyParser.json());
+
+app.use(cookieParser());
+
+app.use(session({
+	resave: false,
+	saveUninitialized: true,
+	secret: &#39;CloudNte&#39;,
+	name: &#39;RanMoCloudNote&#39;
+}));
+
+app.use(function(req,res,next){
+	if (!req.session.user) {
+		if (req.url === &#39;/note/login&#39; || req.url === &#39;/note/register&#39;) {
+			next();/*请求为登陆或者注册则不需要校验session*/
+		};
+	}
+	else if (req.session.user) {
+		next();
+	};
+})
+
+require(&#39;../app/routes/note.server.routes&#39;)(app);
+
+app.use(function(req, res, next){
+	res.status(404);
+	try{
+		return res.json(&#39;No Found!&#39;);
+	}
+	catch(e){
+		console.error(&#39;404 set header after send.&#39;);
+	}
+})
+
+app.use(function(err, req, res, next){
+	if (!err) {
+		return next();
+	};
+
+	res.status(500);
+	try{
+		return res.json(err.message || &quot;server err&quot;);
+	}
+	catch(e){
+		console.error(&#39;500 set header after send.&#39;)
+	}
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;uploadIcon路由后进入该函数，用formidable模块来实现图片上传。uploadDir指定上传后图片保存位置，keepExtensions可以使得上传的文件保持原来的文件的扩展名.之后上传的文件就会在uploadDir指定的目录下，可以用fs模块对文件进行操作。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var formidable = require(&quot;formidable&quot;);
+
+uploadIcon: function(req, res, next){
+	var form = new formidable.IncomingForm();
+	form.encoding = &#39;utf-8&#39;;
+	form.uploadDir = __dirname+&#39;/../../uploadFiles/&#39;;
+	form.keepExtensions = true;
+	form.maxFieldsSize = 2*1024*1024;/*限制图片大小最大为2M*/
+
+	var fileType;
+	form.parse(req, function(err,fields,files){
+		switch(files.image.type){
+			case &#39;image/jpeg&#39;:
+				fileType = &#39;jpeg&#39;;
+				break;
+			case &#39;image/png&#39;:
+				fileType = &#39;png&#39;;
+				break;
+			case &#39;image/jpg&#39;:
+				fileType = &#39;jpg&#39;;
+				break;
+		}
+
+		if (fileType === undefined) {/*上传的图片格式没有按照指定要求*/
+			res.send(&#39;uploadIcon img type err&#39;);
+		};
+
+		Users.find({userName:req.session.user.userName}, null,{},function(err,result){
+			var dst = __dirname+&#39;/../../views/userDatas/userIcon/&#39;+req.session.user.userName+&#39;.&#39;+fileType;
+			fs.writeFileSync(dst, fs.readFileSync(files.image.path));
+	
+			/*将用户头像路径存储到数据库*/
+			result[0].userImage = &#39;/userDatas/userIcon/&#39;+req.session.user.userName+&#39;.&#39;+fileType;
+			result[0].save(function(err){
+				if (err) {
+					console.log(&#39;uploadIcon userImage err!&#39;);
+					res.send(&#39;uploadIcon userImage err&#39;);
+				};
+			})
+
+			fs.unlinkSync(files.image.path);/*删除缓存文件*/
+			res.send(&#39;uploadIcon successed&#39;);
+		})
+	})
+},
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;接下来是前端的实现&lt;/h2&gt;
+
+&lt;p&gt;前端用了react，这里主要关注form即可。
+form中填写action、method等必要字段，特别是不能忘记encType=”multipart/form-data”，否则不会http请求不会带上文件，只会将文件名发送过去。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &amp;lt;div className=&quot;&quot;&amp;gt;
+	&amp;lt;div className=&quot;ui-edit-icon-div&quot;&amp;gt;
+		&amp;lt;img onClick={this.handleIconClick} className=&quot;img-responsive ui-edit-icon img-circle&quot; src={this.state.userInformation.userImage+&#39;?&#39;+Math.random() || &quot;../../image/defaultHeadPortrait.png&quot;}&amp;gt;&amp;lt;/img&amp;gt;
+	&amp;lt;/div&amp;gt;
+	&amp;lt;div className=&quot;ui-edit-notes-div&quot;&amp;gt;
+		&amp;lt;span&amp;gt;注：头像大小不得超过2M&amp;lt;/span&amp;gt;
+	&amp;lt;/div&amp;gt;
+	&amp;lt;div className=&quot;ui-edit-notes-div&quot;&amp;gt;
+		&amp;lt;span&amp;gt;支持&amp;lt;/span&amp;gt;
+		&amp;lt;span className=&quot;ui-color-red&quot;&amp;gt;*jpg、jpeg、png&amp;lt;/span&amp;gt;
+		&amp;lt;span&amp;gt;格式的图片上传&amp;lt;/span&amp;gt;
+	&amp;lt;/div&amp;gt;
+	&amp;lt;form className=&quot;ui-display-none&quot; action=&quot;/note/uploadIcon&quot; method=&quot;post&quot; encType=&quot;multipart/form-data&quot; target=&quot;userImage&quot;&amp;gt;
+		&amp;lt;input id=&quot;edit_file&quot; onChange={this.handleFileChange} type=&quot;file&quot; accept=&quot;image/*&quot; name=&quot;image&quot;&amp;gt;&amp;lt;/input&amp;gt;
+		&amp;lt;input id=&quot;edit_upload&quot; type=&quot;submit&quot; value=&quot;上传头像&quot;&amp;gt;&amp;lt;/input&amp;gt;
+	&amp;lt;/form&amp;gt;
+	&amp;lt;iframe id=&quot;edit_iframe&quot; name=&quot;userImage&quot; className=&quot;ui-display-none&quot;&amp;gt;&amp;lt;/iframe&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;更详细的内容可以参考我的&lt;a href=&quot;https://github.com/answershuto&quot;&gt;Github&lt;/a&gt;中的&lt;a href=&quot;https://github.com/answershuto/Note&quot;&gt;Note工程&lt;/a&gt;。&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 28 Aug 2016 22:08:00 +0800</pubDate>
+        <link>/jekyll/update/2016/08/28/nodejs%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0.html</link>
+        <guid isPermaLink="true">/jekyll/update/2016/08/28/nodejs%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0.html</guid>
+        
+        <category>前端</category>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
     
       <item>
         <title>img、css等客户端缓存问题解决方案</title>
@@ -805,243 +1109,6 @@ Snake.prototype.isOver = function(newNode){
         <guid isPermaLink="true">/jekyll/update/2016/04/20/%E6%88%91%E5%AF%B9javascript%E7%BB%A7%E6%89%BF%E7%9A%84%E7%90%86%E8%A7%A3.html</guid>
         
         <category>javascript</category>
-        
-        
-        <category>jekyll</category>
-        
-        <category>update</category>
-        
-      </item>
-    
-      <item>
-        <title>如何用github + jekyll搭建自己的blog</title>
-        <description>&lt;p&gt;本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑，&lt;br /&gt;有误之处望请包涵指正。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;&lt;img src=&quot;/img/jekyllBuild/octojekyll.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;jekyll&quot;&gt;1.jekyll是什么？&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;简单地说jekyll就是一个简单免费的blog生成工具，类似WordPress，但是又不像WordPress一样需要一个php以及mysql部署的后台应用程序。简单来说jekyll可以生成一个静态的blog，它可以部署在Github上，同时也可以绑定自己的域名。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;section&quot;&gt;2.前期准备&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;＊ 一个脚本编辑器 &lt;strong&gt;Sublime Text&lt;/strong&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;＊ Terminal(终端)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;＊ Github&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;section-1&quot;&gt;3.买域名&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;这步我没有做，直接附上&lt;a href=&quot;http://jingyan.baidu.com/article/fec4bce20d364bf2618d8b39.html&quot;&gt;传送门&lt;/a&gt;  (怎样购买GoDaddy域名).&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;如果没有购买域名，那建站完成之后只能使用github上默认的域名访问自己的blog&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;例如:&lt;a href=&quot;http://answershuto.github.io/&quot;&gt;http://answershuto.github.io/&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;github&quot;&gt;4.注册github创建代码仓库&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;githubhttpjingyanbaiducomarticle455a9950abe0ada167277864html&quot;&gt;1.注册github，这个简单直接上个&lt;a href=&quot;http://jingyan.baidu.com/article/455a9950abe0ada167277864.html&quot;&gt;传送门&lt;/a&gt;.&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;section-2&quot;&gt;2.创建代码仓库&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;[1]登录&lt;a href=&quot;https://github.com&quot;&gt;Github&lt;/a&gt;&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;[2]创建代码仓库&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;&lt;img src=&quot;/img/jekyllBuild/newRepositery.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;[3]将仓库名字命名为userName.github.io，之后会用这个域名访问自己的blog，比如我这里使用了&lt;a href=&quot;http://answershuto.github.io/&quot;&gt;answershuto.github.io&lt;/a&gt;&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;&lt;img src=&quot;/img/jekyllBuild/RepositeryName.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;[4]点击Create repository&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;jekyll-1&quot;&gt;5.搭建本地调适环境以及安装jekyll&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;macosxrubyjekyll&quot;&gt;1.由于为的mac环境osX上面已经自带的了Ruby的环境，所以直接安装jekyll&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;gem-install-jekyll&quot;&gt;2.打开终端，执行  $gem install jekyll&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;第一次搭建环境的时候完全不知道怎么搞啊，运行的时候一直报错，在网上找了好多方法，有的说要用翻墙啊什么的，最后使用了淘宝镜像解决了。&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;jekyll-new-blog--jekyllbloggithubhttpjekyllthemesorggit-cloneforkgithub&quot;&gt;3.在终端执行  $ jekyll new blog  可以新建一个jekyll生成的blog，当然也可以从网上或者github上找一些别人提供的开源模板，效果都不错，提供一个&lt;a href=&quot;http://jekyllthemes.org&quot;&gt;传送门&lt;/a&gt;,用git clone到本地，或者是fork到自己的github上。&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;githubgithub&quot;&gt;4.将本地项目上传到之前建立的github代码仓库上。(注：发布到Github上后可能需要有一段时间的延迟才可以访问)&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;$git init&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;$git add README.md&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;$git commit -m “first commit”&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;$git remote add origin https://github.com/answershuto/answershuto.github.io.git&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;$git push -u origin master&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;usernamegithubioanswershutogithubiohttpanswershutogithubio&quot;&gt;5.在浏览器中输入 userName.github.io即可,例如&lt;a href=&quot;http://answershuto.github.io/&quot;&gt;answershuto.github.io&lt;/a&gt;&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;section-3&quot;&gt;6.本地调试&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;进入之前jekyll new blog 生成的目录下或者是git clone出来的目录下，&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;$cd blog&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;执行 $jekyll serve&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;在浏览器中输入 localhost:4000  (注：jekyll默认用4000端口，可以在配置中修改该端口号)&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;blogblog&quot;&gt;接下来就可以愉快地修改自己blog的代码，打造一个自己喜欢风格的blog了.&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;jekyll-2&quot;&gt;6.jekyll博客基本用法&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;jekull&quot;&gt;1.jekull目录结构&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;_site目录是最终自动生成的目录.&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;_post目录为存放文章的目录，存放的格式为 年－月－日－题目.MarkDown.&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;_layouts目录为布局文件存放目录.&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;_includes目录存放一些组件，在其他文件中可以引用该目录中的文件&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;_config.yml存储全局配置&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;markdonw-httpwowubuntucommarkdownphilosophy&quot;&gt;2.MarkDonw语法 附上学习&lt;a href=&quot;http://wowubuntu.com/markdown/#philosophy&quot;&gt;传送门&lt;/a&gt;&lt;/h3&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;h3 id=&quot;blog&quot;&gt;3.接下来就可以根据一些前端的支持修改自己的页面，定制自己专属风格的blog。&lt;/h3&gt;
-&lt;/blockquote&gt;
-</description>
-        <pubDate>Sun, 10 Apr 2016 23:14:00 +0800</pubDate>
-        <link>/jekyll/update/2016/04/10/jekyllBuild.html</link>
-        <guid isPermaLink="true">/jekyll/update/2016/04/10/jekyllBuild.html</guid>
-        
-        <category>jekyll 前端</category>
         
         
         <category>jekyll</category>
