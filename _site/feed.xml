@@ -5,8 +5,8 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 30 Oct 2016 22:13:34 +0800</pubDate>
-    <lastBuildDate>Sun, 30 Oct 2016 22:13:34 +0800</lastBuildDate>
+    <pubDate>Mon, 31 Oct 2016 11:09:24 +0800</pubDate>
+    <lastBuildDate>Mon, 31 Oct 2016 11:09:24 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -127,7 +127,7 @@ ocalSearch.search(params[url].location);
 
 &lt;p&gt;在爬取过程中发现58同城的反爬虫策略，快速访问会让你输入验证码来验证是人在操作而不是代码访问。只要是人可以正常访问并不影响用户正常体验的网站都有办法绕过反爬虫策略。&lt;/p&gt;
 
-&lt;p&gt;先采用较慢的方式发送http请求访问，此外每隔一段时间最好停一下，然后再继续访问。最保险的方法就是购买代理，让代理用不同的ip地址去访问网站，即可绕过反爬虫机制。&lt;/p&gt;
+&lt;p&gt;先采用较慢的方式发送http请求访问，此外每隔一段时间最好停一下，然后再继续访问。除此之外用User-Agent字段伪装成浏览器。最保险的方法就是购买代理，让代理用不同的ip地址去访问网站，即可绕过反爬虫机制。&lt;/p&gt;
 
 &lt;p&gt;具体做法可以参照相关反爬虫策略的文章。&lt;/p&gt;
 
