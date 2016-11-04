@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "如何用github + jekyll搭建自己的blog"
+title:  "用github + jekyll搭建自己的blog"
 date:   2016-04-10 23:14:00 +0800
 categories: jekyll update
 tags: [jekyll 前端] 
