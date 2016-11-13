@@ -5,9 +5,99 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 04 Nov 2016 22:25:17 +0800</pubDate>
-    <lastBuildDate>Fri, 04 Nov 2016 22:25:17 +0800</lastBuildDate>
+    <pubDate>Sun, 13 Nov 2016 21:46:06 +0800</pubDate>
+    <lastBuildDate>Sun, 13 Nov 2016 21:46:06 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>微信小程序Demo</title>
+        <description>&lt;h2 id=&quot;section&quot;&gt;建立微信小程序工程&lt;/h2&gt;
+
+&lt;p&gt;打开微信开发者工具，可以直接去官网下载。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/img/wxDemo/img1.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;新建一个工程。&lt;/p&gt;
+
+&lt;p&gt;这里没有内侧或者公测资格（只有企业公众号才有）可以选择无AppID模式，此模式下部分功能受限，但是不影响我们“尝鲜”微信小程序。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/wxDemo/img2.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/wxDemo/img3.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;目录结构及文件&lt;/h2&gt;
+
+&lt;p&gt;新建好的工程代码目录如下。&lt;/p&gt;
+
+&lt;p&gt;app.js为整个微信小程序的入口文件，里面提供了一些全局方法以及全局变量。&lt;/p&gt;
+
+&lt;p&gt;app.json是整个项目的配置，里面以json格式提供配置（注：不能写注释）。&lt;/p&gt;
+
+&lt;p&gt;wxss为样式文件，类似css的作用。&lt;/p&gt;
+
+&lt;p&gt;pages是一个文件夹，里面包含了每个单页面，单页面也是一个单独的文件夹存放在pages下面，里面可以包含wxml、wxss、js以及json四个格式的文件，每个文件的命名规范都跟文件夹名字一致。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/wxDemo/img4.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;添加一个页面&lt;/h2&gt;
+
+&lt;p&gt;首先要在pages文件夹下面新建一个文件夹，如新加一个名为map的页面。&lt;/p&gt;
+
+&lt;p&gt;新建map文件夹，在下面加入map.js、map.wxss、map.wxml、map.json（可选）。&lt;/p&gt;
+
+&lt;p&gt;然后在app.json配置文件中pages数组中加入相应数据。&lt;/p&gt;
+
+&lt;p&gt;wxss相当于css，wxml相当于html，json是一些配置，前端er很容易上手。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;开发页面&lt;/h2&gt;
+
+&lt;p&gt;微信小程序开发文档&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;amp;id=mp1474632113_xQVCl&amp;amp;token=&amp;amp;lang=zh_CN/&quot;&gt;https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;amp;id=mp1474632113_xQVCl&amp;amp;token=&amp;amp;lang=zh_CN/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;wxss相当于css，wxml相当于html，json是一些配置。&lt;/p&gt;
+
+&lt;p&gt;有了前端基础开发微信小程序上手非常快，就是wxml中组建需要用官方提供的，比如a标签没有了，没法直接访问外部链接了（个人认为这是接入商家会觉得比较蛋疼的一个地方）。&lt;/p&gt;
+
+&lt;p&gt;还有一些基础API，简单易用，快速上手。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;demo&quot;&gt;Demo&lt;/h2&gt;
+
+&lt;p&gt;最后附上我的Demo。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/answershuto/wxDemo&quot;&gt;https://github.com/answershuto/wxDemo&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 13 Nov 2016 20:33:00 +0800</pubDate>
+        <link>/jekyll/update/2016/11/13/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8FDemo.html</link>
+        <guid isPermaLink="true">/jekyll/update/2016/11/13/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8FDemo.html</guid>
+        
+        <category>前端 微信</category>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
     
       <item>
         <title>养只爬虫当宠物（Node.js爬虫爬取58同城租房信息）</title>
@@ -1001,122 +1091,6 @@ Snake.prototype.isOver = function(newNode){
         <guid isPermaLink="true">/jekyll/update/2016/04/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html</guid>
         
         <category>git</category>
-        
-        
-        <category>jekyll</category>
-        
-        <category>update</category>
-        
-      </item>
-    
-      <item>
-        <title>我对javascript继承的理解</title>
-        <description>&lt;p&gt;记录一下学习js继承的学习心得，有误之处欢迎指正。&lt;/p&gt;
-
-&lt;p&gt;javascript中的继承主要通过原型链的方式来实现，简单地说也就是对象a所指向的原型A是原型B的一个实例b，即B的实例是a所指向的原型。&lt;/p&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;section&quot;&gt;借用构造函数&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/jsInherit/parasiticCombination.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;这种继承方式的弊端显而易见，数据以及方法都必须定义在基类的构造函数中，在派生类中用call改变执行环境时，基类的数据以及方法会生成在派生类中，即this。但是如果在基类的原型中定义的方法以及数据，就无法在派生类中得到继承。将所有的方法以及数据都定义在构造函数中，也就没有什么封装可言了。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;section-1&quot;&gt;原型式继承&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/jsInherit/prototype.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;原型继承主要通过Object.create()方法，构建一个新的派生类对象并使其原型指向基类。其函数内容可以描述为&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function object(o){
-	function F();
-	F.prototype = 0;
-	return F;
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;这种方法使得基类中的引用变量得到了共用，可以使得对象保持相似。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;section-2&quot;&gt;组合继承&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;js里面最常用的继承方法&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;上代码：&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/jsInherit/combination.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在派生类中调用基类的构造函数，如果不那么做会导致所有基类的成员及方法都属于原型，那么这些成员和方法都是“公有”的，也就是所有的派生类都指向同一块内存（这里就是原型），导致某一个派生类对象修改了基类中的成员数据会导致所有派生类的数据都改变。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;针对上述这个问题，在派生类中用call来执行基类的构造函数，使得基类的执行环境处于派生类，即this的指向改变。这样可以有效地防止出现由于基类对象作为原型导致基类对象中的引用对象产生的派生类实例所有引用对象都指向同一个对象的问题。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;组合式继承也有自己的弊端，在创建基类实例以及在派生类的构造函数中会两次调用基类的构造函数，第二次会覆盖第一次掉用时创建的对象及方法。&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在派生类的构造函数中初始化派生实例自己的成员&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;section-3&quot;&gt;寄生式继承&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/jsInherit/parasitic.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;寄生式继承相当于克隆了基类对象。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;section-4&quot;&gt;寄生组合式继承&lt;/h2&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/jsInherit/parasiticCombination.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;blockquote&gt;
-    &lt;p&gt;由于组合式继承会在创建时两次掉用基类的构造函数构造基类的对象，所以综合寄生式继承，产生了寄生组合式继承。&lt;/p&gt;
-  &lt;/blockquote&gt;
-&lt;/blockquote&gt;
-
-</description>
-        <pubDate>Wed, 20 Apr 2016 22:31:00 +0800</pubDate>
-        <link>/jekyll/update/2016/04/20/%E6%88%91%E5%AF%B9javascript%E7%BB%A7%E6%89%BF%E7%9A%84%E7%90%86%E8%A7%A3.html</link>
-        <guid isPermaLink="true">/jekyll/update/2016/04/20/%E6%88%91%E5%AF%B9javascript%E7%BB%A7%E6%89%BF%E7%9A%84%E7%90%86%E8%A7%A3.html</guid>
-        
-        <category>javascript</category>
         
         
         <category>jekyll</category>
