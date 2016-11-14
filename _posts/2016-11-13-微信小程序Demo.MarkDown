@@ -75,34 +75,40 @@ wxss相当于css，wxml相当于html，json是一些配置。
 
 关于tabBar。
 
+![img](/img/wxDemo/img5.png)
+
+我做了一个跟微信比较类似的效果。
+
 只需在app.json配置文件中加入相应的代码即可。
 
+pagePath对应相应页面，iconPath与selectedIconPath代表选中与不选中的时候的图片。
+
 	"tabBar": {
-    "color": "#dddddd",
-    "selectedColor": "#21BB32",
-    "borderStyle": "white",
-    "navigationBarTitleText": "",
-    "backgroundColor": "white",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "Home",
-        "iconPath": "images/home1.png",
-        "selectedIconPath": "images/home2.png"
-      },
-      {
-        "pagePath": "pages/map/map",
-        "text": "Map",
-        "iconPath": "images/map1.png",
-        "selectedIconPath": "images/map2.png"
-      },
-      {
-        "pagePath": "pages/game/game",
-        "text": "Game",
-        "iconPath": "images/player1.png",
-        "selectedIconPath": "images/player2.png"
-      }
-    ]
+	"color": "#dddddd",
+	"selectedColor": "#21BB32",
+	"borderStyle": "white",
+	"navigationBarTitleText": "",
+	"backgroundColor": "white",
+	"list": [
+	  {
+	    "pagePath": "pages/index/index",
+	    "text": "Home",
+	    "iconPath": "images/home1.png",
+	    "selectedIconPath": "images/home2.png"
+	  },
+	  {
+	    "pagePath": "pages/map/map",
+	    "text": "Map",
+	    "iconPath": "images/map1.png",
+	    "selectedIconPath": "images/map2.png"
+	  },
+	  {
+	    "pagePath": "pages/game/game",
+	    "text": "Game",
+	    "iconPath": "images/player1.png",
+	    "selectedIconPath": "images/player2.png"
+	  }
+	]
   }
 
 <br />

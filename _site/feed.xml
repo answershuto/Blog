@@ -5,8 +5,8 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 14 Nov 2016 21:02:16 +0800</pubDate>
-    <lastBuildDate>Mon, 14 Nov 2016 21:02:16 +0800</lastBuildDate>
+    <pubDate>Mon, 14 Nov 2016 21:06:17 +0800</pubDate>
+    <lastBuildDate>Mon, 14 Nov 2016 21:06:17 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -79,7 +79,13 @@
 
 &lt;p&gt;关于tabBar。&lt;/p&gt;
 
+&lt;p&gt;&lt;img src=&quot;/img/wxDemo/img5.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我做了一个跟微信比较类似的效果。&lt;/p&gt;
+
 &lt;p&gt;只需在app.json配置文件中加入相应的代码即可。&lt;/p&gt;
+
+&lt;p&gt;pagePath对应相应页面，iconPath与selectedIconPath代表选中与不选中的时候的图片。&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&quot;tabBar&quot;: {
 &quot;color&quot;: &quot;#dddddd&quot;,
