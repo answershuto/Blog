@@ -5,8 +5,8 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 13 Nov 2016 21:46:06 +0800</pubDate>
-    <lastBuildDate>Sun, 13 Nov 2016 21:46:06 +0800</lastBuildDate>
+    <pubDate>Mon, 14 Nov 2016 21:02:16 +0800</pubDate>
+    <lastBuildDate>Mon, 14 Nov 2016 21:02:16 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -74,6 +74,41 @@
 &lt;p&gt;有了前端基础开发微信小程序上手非常快，就是wxml中组建需要用官方提供的，比如a标签没有了，没法直接访问外部链接了（个人认为这是接入商家会觉得比较蛋疼的一个地方）。&lt;/p&gt;
 
 &lt;p&gt;还有一些基础API，简单易用，快速上手。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;关于tabBar。&lt;/p&gt;
+
+&lt;p&gt;只需在app.json配置文件中加入相应的代码即可。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&quot;tabBar&quot;: {
+&quot;color&quot;: &quot;#dddddd&quot;,
+&quot;selectedColor&quot;: &quot;#21BB32&quot;,
+&quot;borderStyle&quot;: &quot;white&quot;,
+&quot;navigationBarTitleText&quot;: &quot;&quot;,
+&quot;backgroundColor&quot;: &quot;white&quot;,
+&quot;list&quot;: [
+  {
+    &quot;pagePath&quot;: &quot;pages/index/index&quot;,
+    &quot;text&quot;: &quot;Home&quot;,
+    &quot;iconPath&quot;: &quot;images/home1.png&quot;,
+    &quot;selectedIconPath&quot;: &quot;images/home2.png&quot;
+  },
+  {
+    &quot;pagePath&quot;: &quot;pages/map/map&quot;,
+    &quot;text&quot;: &quot;Map&quot;,
+    &quot;iconPath&quot;: &quot;images/map1.png&quot;,
+    &quot;selectedIconPath&quot;: &quot;images/map2.png&quot;
+  },
+  {
+    &quot;pagePath&quot;: &quot;pages/game/game&quot;,
+    &quot;text&quot;: &quot;Game&quot;,
+    &quot;iconPath&quot;: &quot;images/player1.png&quot;,
+    &quot;selectedIconPath&quot;: &quot;images/player2.png&quot;
+  }
+]   }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 

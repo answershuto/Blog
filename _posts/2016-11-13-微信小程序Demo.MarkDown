@@ -5,7 +5,6 @@ date:   2016-11-13 20:33:00 +0800
 categories: jekyll update
 tags: [前端 微信] 
 excerpt: 一个微信小程序Demo
-
 ---
 
 
@@ -71,6 +70,40 @@ wxss相当于css，wxml相当于html，json是一些配置。
 有了前端基础开发微信小程序上手非常快，就是wxml中组建需要用官方提供的，比如a标签没有了，没法直接访问外部链接了（个人认为这是接入商家会觉得比较蛋疼的一个地方）。
 
 还有一些基础API，简单易用，快速上手。
+
+<br />
+
+关于tabBar。
+
+只需在app.json配置文件中加入相应的代码即可。
+
+	"tabBar": {
+    "color": "#dddddd",
+    "selectedColor": "#21BB32",
+    "borderStyle": "white",
+    "navigationBarTitleText": "",
+    "backgroundColor": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "Home",
+        "iconPath": "images/home1.png",
+        "selectedIconPath": "images/home2.png"
+      },
+      {
+        "pagePath": "pages/map/map",
+        "text": "Map",
+        "iconPath": "images/map1.png",
+        "selectedIconPath": "images/map2.png"
+      },
+      {
+        "pagePath": "pages/game/game",
+        "text": "Game",
+        "iconPath": "images/player1.png",
+        "selectedIconPath": "images/player2.png"
+      }
+    ]
+  }
 
 <br />
 
