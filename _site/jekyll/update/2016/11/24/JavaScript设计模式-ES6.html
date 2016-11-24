@@ -1,0 +1,220 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>JavaScript设计模式（ES6）</title> <meta name="description" content="用es6实现常用设计模式."> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/jekyll/update/2016/11/24/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-ES6.html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">JavaScript设计模式（ES6）</h1> <p class="post-meta"><time datetime="2016-11-24T22:53:00+08:00" itemprop="datePublished">Nov 24, 2016</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <h1 id="javsscript-design-pattern-es6">JavsScript design pattern (ES6)</h1> <p><a href="#factory">●工厂模式</a></p> <p><a href="#singleInstance">●单例模式</a></p> <p><a href="#observer">●观察者模式</a></p> <hr /> <p><span id="factory"></span></p> <h2 id="section">工厂模式</h2> <div class="highlighter-rouge"><pre class="highlight"><code>// ES6 factory
+
+/** 
+
+ * @abstract class Animal
+
+ */
+
+class Animal {
+	constructor(){
+		if (new.target === Animal) {
+			throw new Error('Animal class is a abstract class');
+		};
+	}
+
+	call(){
+		throw new Error('function call is not implemented');
+	}
+
+	eat(){
+		throw new Error('function eat is not implemented');
+	}
+}
+
+
+
+/** 
+
+ * @class Cat
+
+ * @extends Animal
+
+ */
+
+class Cat extends Animal {
+	constructor(){
+		super();
+		console.log('I am a cat');
+	}
+
+	call(){
+		console.log('miao miao~');
+	}
+
+	eat(){
+		console.log('eat fish');
+	}
+}
+
+
+
+/** 
+
+ * @class Dog
+
+ * @extends Animal
+
+ */
+
+class Dog extends Animal {
+	constructor(){
+		super();
+		console.log('I am a dog');
+	}
+
+	call(){
+		console.log('wang wang~');
+	}
+
+	eat(){
+		console.log('eat meat');
+	}
+}
+
+
+
+/** 
+
+ * @class AnimalFactory
+
+ * factory class
+
+ * AnimalType 
+
+ */
+
+class AnimalFactory {
+	constructor(){
+		
+	}
+
+	static CreatAnimal(strAnimalType = AnimalType.Cat){
+		switch(strAnimalType) {
+			case AnimalType.Cat:
+				return new Cat();
+				break;
+			case AnimalType.Dog:
+				return new Dog();
+				break;
+		}
+	}
+}
+
+/**
+
+ * AnimalType
+
+ * @type String
+
+ */
+const AnimalType = {
+	Cat: 'Cat',
+	Dog: 'Dog'
+};
+
+
+
+
+
+(function(){
+
+	/*create a cat*/
+	let cat = AnimalFactory.CreatAnimal(AnimalType.Cat);
+	cat.call();
+	cat.eat();
+
+	/*create a dog*/
+	let dog = AnimalFactory.CreatAnimal(AnimalType.Dog);
+	dog.call();
+	dog.eat();
+
+})();
+</code></pre></div> <p><span id="singleInstance"></span></p> <h2 id="section-1">单例模式</h2> <div class="highlighter-rouge"><pre class="highlight"><code>// ES6 single instance
+
+
+
+/** 
+
+ * @instance class DBoperation
+
+ */
+class DBoperation {
+
+	constructor(){
+		if (DBoperation.instance === undefined) {
+			/*init*/
+			this.add = function(){
+				console.log('add');
+			}
+			this.del = function(){
+				console.log('del');
+			}
+			this.mod = function(){
+				console.log('mod');
+			}
+			this.find = function(){
+				console.log('find');
+			}
+			DBoperation.instance = this;
+		};
+
+		return DBoperation.instance;
+	}
+}
+
+DBoperation.instance;
+
+
+
+let a = new DBoperation();
+let b = new DBoperation();
+console.log(a === b)
+a.add()
+b.add()
+</code></pre></div> <p><span id="observer"></span></p> <h2 id="section-2">观察者模式</h2> <div class="highlighter-rouge"><pre class="highlight"><code>// ES6 single observer
+
+class Observer {
+	constructor(){
+		this.objSet = new Set();
+	}
+
+	attach(obj){
+		this.objSet.add(obj);
+	}
+
+	detach(obj){
+		this.objSet.delete(obj);
+	}
+
+	fire(){
+		for(let item of this.objSet){
+			item.update &amp;&amp; item.update();
+		}
+	}
+}
+
+class Config {
+	constructor(name = "config"){
+		this.name = name;
+	}
+
+	update(){
+		console.log('i am '+this.name);
+	}
+}
+
+let c1 = new Config('cfg1');
+let c2 = new Config('cfg2');
+let c3 = new Config('cfg3');
+
+let obs = new Observer();
+
+obs.attach(c1);
+obs.attach(c2);
+obs.attach(c3);
+
+obs.detach(c2);
+
+obs.fire();
+</code></pre></div> </div> </article> <footer class="site-footer"> <div class="container"> <ul class="social"> <li><a href="http://github.com/answershuto" target="_blank"><i class="icon icon-github"></i></a></li> <li><a href="" target="_blank"><i class="icon icon-linkedin"></i></a></li> <li><a href="" target="_blank"><i class="icon icon-twitter"></i></a></li> </ul> <p> <br><small>&copy;2016 CaoYang , All rights reserved.</small> </p> </div> </footer> </main> <script src="/assets/js/jquery-2.1.1.js"></script> <script src="/assets/js/main.js"></script> </body> </html><!-- by nandomoreira.me -->

@@ -1,0 +1,62 @@
+<p>本文主要记录我在mac上搭建MongoDB数据库环境的过程.</p>
+
+<p>1.首先执行</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	$ brew update
+</code></pre>
+</div>
+
+<p>这个更新可能需要花一些时间，具体看多久没更新了。</p>
+
+<p>2.接着执行</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	$ brew install mongodb
+</code></pre>
+</div>
+
+<p>安装MongoDB，显示如下打印，这个速度比较快的。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	==&gt; Downloading https://homebrew.bintray.com/bottles/mongodb-3.2.6.el_capitan.bo Already downloaded: /Library/Caches/Homebrew/mongodb-3.2.6.el_capitan.bottle.tar.gz
+	==&gt; Pouring mongodb-3.2.6.el_capitan.bottle.tar.gz
+	==&gt; Caveats
+	To have launchd start mongodb now and restart at login:
+	  brew services start mongodb
+	Or, if you don't want/need a background service you can just run:
+	  mongod --config /usr/local/etc/mongod.conf
+	==&gt; Summary
+	🍺  /usr/local/Cellar/mongodb/3.2.6: 17 files, 263.8M
+</code></pre>
+</div>
+
+<p>3.如果要卸载MongoDB的话执行</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	$ brew uninstall mongodb
+</code></pre>
+</div>
+
+<p>打印</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	Uninstalling /usr/local/Cellar/mongodb/3.2.6... (17 files, 263.8M)
+</code></pre>
+</div>
+
+<p>4.接着执行</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	$ mongod --config /usr/local/etc/mongod.conf 
+</code></pre>
+</div>
+
+<p>这句话是根据/usr/local/etc/mongod.conf来对MongoDB进行配置,这个我一开始执行的时候一直很慢卡在这一步了，但是把终端关闭然后重新打开以后发现一下子就执行好了。</p>
+
+<p>5.接着就可以运行MongoDB了</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>	$ mongo
+	MongoDB shell version: 3.2.6
+	connecting to: test
+	Server has startup warnings: 
+	2016-05-08T22:04:58.899+0800 I CONTROL  [initandlisten] 
+	2016-05-08T22:04:58.900+0800 I CONTROL  [initandlisten] ** WARNING: soft rlimits too low. Number of files is 256, should be at least 1000
+	&gt; 
+</code></pre>
+</div>
+
