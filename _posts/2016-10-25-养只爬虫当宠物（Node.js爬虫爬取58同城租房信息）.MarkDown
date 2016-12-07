@@ -31,9 +31,11 @@ excerpt: 用Node.js编写网络爬虫，爬取58同城租房信息并进行可�
 
 可以得到这一串URL，上下页查看后就不难发现，pn后面的数字就是页面的页码，？后面的是一些get请求带带参数。用一个函数即可通过页码得到正确的URL。
 
-	function getUrl(page = 1){
-		return  'http://hz.58.com/chuzu/pn'+page+'/?key=%E6%9D%AD%E5%B7%9E%E7%A7%9F%E6%88%BF%E5%AD%90&cmcskey=%E7%A7%9F%E6%88%BF%E5%AD%90&final=1&PGTID=0d3090a7-0004-f43c-ee04-95c2ea3d031f&ClickID=6';
-	}
+```javascript
+function getUrl(page = 1){
+	return  'http://hz.58.com/chuzu/pn'+page+'/?key=%E6%9D%AD%E5%B7%9E%E7%A7%9F%E6%88%BF%E5%AD%90&cmcskey=%E7%A7%9F%E6%88%BF%E5%AD%90&final=1&PGTID=0d3090a7-0004-f43c-ee04-95c2ea3d031f&ClickID=6';
+}
+```
 
 根据上面的URL我们就可以访问到每一页的所有租房信息
 
@@ -45,8 +47,10 @@ excerpt: 用Node.js编写网络爬虫，爬取58同城租房信息并进行可�
 
 安装cheerio模块，使用cheerio模块解析dom，然后就可以类似jquery一样访问dom了。
 
-	var cheerio = require('cheerio');
-	let $ = cheerio.load(html);
+```javascript
+var cheerio = require('cheerio');
+let $ = cheerio.load(html);
+```
 
 ---
 
@@ -58,13 +62,17 @@ excerpt: 用Node.js编写网络爬虫，爬取58同城租房信息并进行可�
 
 可以看到对应的a标签，我们只需要提取出该url即可，及对应的href，就是它点击跳转的URL。
 
-	<a href="http://jump.jinpai.58.com/service?target=INKicKZPP1UEhIHuBQyP3HVk6MOpffA1WNsEqTYuc2Gxa8zCQdEBOnSPwy7LRseGN-7sgB3XvvZTQ9JsSXvXBXOVP5s7-iWzO-jZ_WBRroCl_ZiBHb5v6-MxytthrUmoPF7B-ffISZByBLAX8fznJUcUsuV6KVKc9zyglbYlX_Ws57NkdXRy7vg4euiIN6TsyENc8bJRhqs&amp;local=79&amp;pubid=4204776&amp;version=A&amp;psid=179352405193657452887456131&amp;entinfo=27800613387971_0&amp;apptype=0 " target="_blank" class="t" onclick="clickLog('from=fcpc_zflist_gzcount');">[单间]支持月付 文一路梧桐公寓 耀江文萃苑 中豪晴元</a>
+```html
+<a href="http://jump.jinpai.58.com/service?target=INKicKZPP1UEhIHuBQyP3HVk6MOpffA1WNsEqTYuc2Gxa8zCQdEBOnSPwy7LRseGN-7sgB3XvvZTQ9JsSXvXBXOVP5s7-iWzO-jZ_WBRroCl_ZiBHb5v6-MxytthrUmoPF7B-ffISZByBLAX8fznJUcUsuV6KVKc9zyglbYlX_Ws57NkdXRy7vg4euiIN6TsyENc8bJRhqs&amp;local=79&amp;pubid=4204776&amp;version=A&amp;psid=179352405193657452887456131&amp;entinfo=27800613387971_0&amp;apptype=0 " target="_blank" class="t" onclick="clickLog('from=fcpc_zflist_gzcount');">[单间]支持月付 文一路梧桐公寓 耀江文萃苑 中豪晴元</a>
+```
 
 该a标签的class为t，用$('a.t')即可得到所有的a标签的对象，得到的是一个数组，遍历取出href属性即可。
 
-	for(let i = 0; i < $('a.t').length; i++){
-		rentalObj.add($('a.t')[i].attribs.href)
-	}
+```javascript
+for(let i = 0; i < $('a.t').length; i++){
+	rentalObj.add($('a.t')[i].attribs.href)
+}
+```
 
 得到了这些URL，接下来就可以用这些URL访问具体的租房信息了，每个URL对应一个租房页面。
 
@@ -78,7 +86,9 @@ excerpt: 用Node.js编写网络爬虫，爬取58同城租房信息并进行可�
 
 > ![img](/img/58Crawler/3.png)
 
-	$('td.house-xqxq-content a.ablue')
+```javascript
+$('td.house-xqxq-content a.ablue')
+```
 
 
 加上父标签可以过滤出更有针对性的dom，此时过滤出的是小区名称、本月均价、所在商圈等信息的dom，我们现在只需要第一个dom里面的数据，所以访问数组的[0]即可。
@@ -87,7 +97,9 @@ excerpt: 用Node.js编写网络爬虫，爬取58同城租房信息并进行可�
 
 除此之外为还需要页面里面的一张展示房屋信息的一张图片，找到对应dom可以发现id为smainPic。
 
-	$('#smainPic')['0'].attribs.src
+```javascript
+$('#smainPic')['0'].attribs.src
+```
 这样访问即可得到图片的URL。
 
 
@@ -101,13 +113,15 @@ excerpt: 用Node.js编写网络爬虫，爬取58同城租房信息并进行可�
 这里使用百度地图api
 [http://lbsyun.baidu.com/index.php?title=jspopular](http://lbsyun.baidu.com/index.php?title=jspopular)
 
-	var map = new BMap.Map("container");          // 创建地图实例  
-	map.centerAndZoom("杭州", 12);
-	var localSearch = new BMap.LocalSearch(map);
-	localSearch.setSearchCompleteCallback(function(searchResult){
-		var poi = searchResult.getPoi(0);/*地理位置信息*/
-	})
-	ocalSearch.search(params[url].location);
+```javascript
+var map = new BMap.Map("container");          // 创建地图实例  
+map.centerAndZoom("杭州", 12);
+var localSearch = new BMap.LocalSearch(map);
+localSearch.setSearchCompleteCallback(function(searchResult){
+	var poi = searchResult.getPoi(0);/*地理位置信息*/
+})
+ocalSearch.search(params[url].location);
+```
 
 获取经纬度以后再掉用相应的api在地图上显示即可，显示后再做什么效果，可自行发挥想象了。
 
