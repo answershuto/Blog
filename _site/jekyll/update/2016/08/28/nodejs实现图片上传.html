@@ -1,116 +1,114 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>Node.js实现图片上传</title> <meta name="description" content="用Node.js实现图片等文件上传"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/jekyll/update/2016/08/28/nodejs%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0.html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">Node.js实现图片上传</h1> <p class="post-meta"><time datetime="2016-08-28T22:08:00+08:00" itemprop="datePublished">Aug 28, 2016</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <p>今天在开发<a href="https://github.com/answershuto/Note.git">染陌云笔记</a>要实现图片上传来修改头像，在网上找资料尝试了很多方法以后最后只有这种方法管用，记录一下。</p> <h2 id="section">首先是后端对实现</h2> <p>使用了这些中间件</p> <div class="highlighter-rouge"><pre class="highlight"><code>var app = express();
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>Node.js实现图片上传</title> <meta name="description" content="用Node.js实现图片等文件上传"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/jekyll/update/2016/08/28/nodejs%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0.html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">Node.js实现图片上传</h1> <p class="post-meta"><time datetime="2016-08-28T22:08:00+08:00" itemprop="datePublished">Aug 28, 2016</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <p>今天在开发<a href="https://github.com/answershuto/Note.git">染陌云笔记</a>要实现图片上传来修改头像，在网上找资料尝试了很多方法以后最后只有这种方法管用，记录一下。</p> <h2 id="section">首先是后端对实现</h2> <p>使用了这些中间件</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'view engine'</span><span class="p">,</span><span class="s1">'ejs'</span><span class="p">);</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="kr">static</span><span class="p">(</span><span class="nx">__dirname</span><span class="o">+</span><span class="s1">'/../views'</span><span class="p">));</span>
 
-app.set('view engine','ejs');
-app.use(express.static(__dirname+'/../views'));
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">bodyParser</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
 
-app.use(bodyParser.json());
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cookieParser</span><span class="p">());</span>
 
-app.use(cookieParser());
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">session</span><span class="p">({</span>
+	<span class="na">resave</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+	<span class="na">saveUninitialized</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+	<span class="na">secret</span><span class="p">:</span> <span class="s1">'CloudNte'</span><span class="p">,</span>
+	<span class="na">name</span><span class="p">:</span> <span class="s1">'RanMoCloudNote'</span>
+<span class="p">}));</span>
 
-app.use(session({
-	resave: false,
-	saveUninitialized: true,
-	secret: 'CloudNte',
-	name: 'RanMoCloudNote'
-}));
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="nx">res</span><span class="p">,</span><span class="nx">next</span><span class="p">){</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">req</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">url</span> <span class="o">===</span> <span class="s1">'/note/login'</span> <span class="o">||</span> <span class="nx">req</span><span class="p">.</span><span class="nx">url</span> <span class="o">===</span> <span class="s1">'/note/register'</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">next</span><span class="p">();</span><span class="cm">/*请求为登陆或者注册则不需要校验session*/</span>
+		<span class="p">};</span>
+	<span class="p">}</span>
+	<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">next</span><span class="p">();</span>
+	<span class="p">};</span>
+<span class="p">})</span>
 
-app.use(function(req,res,next){
-	if (!req.session.user) {
-		if (req.url === '/note/login' || req.url === '/note/register') {
-			next();/*请求为登陆或者注册则不需要校验session*/
-		};
-	}
-	else if (req.session.user) {
-		next();
-	};
-})
+<span class="nx">require</span><span class="p">(</span><span class="s1">'../app/routes/note.server.routes'</span><span class="p">)(</span><span class="nx">app</span><span class="p">);</span>
 
-require('../app/routes/note.server.routes')(app);
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+	<span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mi">404</span><span class="p">);</span>
+	<span class="k">try</span><span class="p">{</span>
+		<span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="s1">'No Found!'</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">'404 set header after send.'</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">})</span>
 
-app.use(function(req, res, next){
-	res.status(404);
-	try{
-		return res.json('No Found!');
-	}
-	catch(e){
-		console.error('404 set header after send.');
-	}
-})
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">next</span><span class="p">();</span>
+	<span class="p">};</span>
 
-app.use(function(err, req, res, next){
-	if (!err) {
-		return next();
-	};
+	<span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+	<span class="k">try</span><span class="p">{</span>
+		<span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span> <span class="o">||</span> <span class="s2">"server err"</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">'500 set header after send.'</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div> <p>uploadIcon路由后进入该函数，用formidable模块来实现图片上传。uploadDir指定上传后图片保存位置，keepExtensions可以使得上传的文件保持原来的文件的扩展名.之后上传的文件就会在uploadDir指定的目录下，可以用fs模块对文件进行操作。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">formidable</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"formidable"</span><span class="p">);</span>
+<span class="nl">uploadIcon</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">){</span>
+	<span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">formidable</span><span class="p">.</span><span class="nx">IncomingForm</span><span class="p">();</span>
+	<span class="nx">form</span><span class="p">.</span><span class="nx">encoding</span> <span class="o">=</span> <span class="s1">'utf-8'</span><span class="p">;</span>
+	<span class="nx">form</span><span class="p">.</span><span class="nx">uploadDir</span> <span class="o">=</span> <span class="nx">__dirname</span><span class="o">+</span><span class="s1">'/../../uploadFiles/'</span><span class="p">;</span>
+	<span class="nx">form</span><span class="p">.</span><span class="nx">keepExtensions</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+	<span class="nx">form</span><span class="p">.</span><span class="nx">maxFieldsSize</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">;</span><span class="cm">/*限制图片大小最大为2M*/</span>
 
-	res.status(500);
-	try{
-		return res.json(err.message || "server err");
-	}
-	catch(e){
-		console.error('500 set header after send.')
-	}
-});
-</code></pre></div> <p>uploadIcon路由后进入该函数，用formidable模块来实现图片上传。uploadDir指定上传后图片保存位置，keepExtensions可以使得上传的文件保持原来的文件的扩展名.之后上传的文件就会在uploadDir指定的目录下，可以用fs模块对文件进行操作。</p> <div class="highlighter-rouge"><pre class="highlight"><code>var formidable = require("formidable");
+	<span class="kd">var</span> <span class="nx">fileType</span><span class="p">;</span>
+	<span class="nx">form</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">fields</span><span class="p">,</span><span class="nx">files</span><span class="p">){</span>
+		<span class="k">switch</span><span class="p">(</span><span class="nx">files</span><span class="p">.</span><span class="nx">image</span><span class="p">.</span><span class="nx">type</span><span class="p">){</span>
+			<span class="k">case</span> <span class="s1">'image/jpeg'</span><span class="err">:</span>
+				<span class="nx">fileType</span> <span class="o">=</span> <span class="s1">'jpeg'</span><span class="p">;</span>
+				<span class="k">break</span><span class="p">;</span>
+			<span class="k">case</span> <span class="s1">'image/png'</span><span class="err">:</span>
+				<span class="nx">fileType</span> <span class="o">=</span> <span class="s1">'png'</span><span class="p">;</span>
+				<span class="k">break</span><span class="p">;</span>
+			<span class="k">case</span> <span class="s1">'image/jpg'</span><span class="err">:</span>
+				<span class="nx">fileType</span> <span class="o">=</span> <span class="s1">'jpg'</span><span class="p">;</span>
+				<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
 
-uploadIcon: function(req, res, next){
-	var form = new formidable.IncomingForm();
-	form.encoding = 'utf-8';
-	form.uploadDir = __dirname+'/../../uploadFiles/';
-	form.keepExtensions = true;
-	form.maxFieldsSize = 2*1024*1024;/*限制图片大小最大为2M*/
+		<span class="k">if</span> <span class="p">(</span><span class="nx">fileType</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span><span class="cm">/*上传的图片格式没有按照指定要求*/</span>
+			<span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">'uploadIcon img type err'</span><span class="p">);</span>
+		<span class="p">};</span>
 
-	var fileType;
-	form.parse(req, function(err,fields,files){
-		switch(files.image.type){
-			case 'image/jpeg':
-				fileType = 'jpeg';
-				break;
-			case 'image/png':
-				fileType = 'png';
-				break;
-			case 'image/jpg':
-				fileType = 'jpg';
-				break;
-		}
-
-		if (fileType === undefined) {/*上传的图片格式没有按照指定要求*/
-			res.send('uploadIcon img type err');
-		};
-
-		Users.find({userName:req.session.user.userName}, null,{},function(err,result){
-			var dst = __dirname+'/../../views/userDatas/userIcon/'+req.session.user.userName+'.'+fileType;
-			fs.writeFileSync(dst, fs.readFileSync(files.image.path));
+		<span class="nx">Users</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="na">userName</span><span class="p">:</span><span class="nx">req</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">userName</span><span class="p">},</span> <span class="kc">null</span><span class="p">,{},</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">result</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">dst</span> <span class="o">=</span> <span class="nx">__dirname</span><span class="o">+</span><span class="s1">'/../../views/userDatas/userIcon/'</span><span class="o">+</span><span class="nx">req</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">userName</span><span class="o">+</span><span class="s1">'.'</span><span class="o">+</span><span class="nx">fileType</span><span class="p">;</span>
+			<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span><span class="p">(</span><span class="nx">dst</span><span class="p">,</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">files</span><span class="p">.</span><span class="nx">image</span><span class="p">.</span><span class="nx">path</span><span class="p">));</span>
 	
-			/*将用户头像路径存储到数据库*/
-			result[0].userImage = '/userDatas/userIcon/'+req.session.user.userName+'.'+fileType;
-			result[0].save(function(err){
-				if (err) {
-					console.log('uploadIcon userImage err!');
-					res.send('uploadIcon userImage err');
-				};
-			})
+			<span class="cm">/*将用户头像路径存储到数据库*/</span>
+			<span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">userImage</span> <span class="o">=</span> <span class="s1">'/userDatas/userIcon/'</span><span class="o">+</span><span class="nx">req</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">userName</span><span class="o">+</span><span class="s1">'.'</span><span class="o">+</span><span class="nx">fileType</span><span class="p">;</span>
+			<span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">save</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'uploadIcon userImage err!'</span><span class="p">);</span>
+					<span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">'uploadIcon userImage err'</span><span class="p">);</span>
+				<span class="p">};</span>
+			<span class="p">})</span>
 
-			fs.unlinkSync(files.image.path);/*删除缓存文件*/
-			res.send('uploadIcon successed');
-		})
-	})
-},
-</code></pre></div> <h2 id="section-1">接下来是前端的实现</h2> <p>前端用了react，这里主要关注form即可。 form中填写action、method等必要字段，特别是不能忘记encType=”multipart/form-data”，否则不会http请求不会带上文件，只会将文件名发送过去。</p> <div class="highlighter-rouge"><pre class="highlight"><code> &lt;div className=""&gt;
-	&lt;div className="ui-edit-icon-div"&gt;
-		&lt;img onClick={this.handleIconClick} className="img-responsive ui-edit-icon img-circle" src={this.state.userInformation.userImage+'?'+Math.random() || "../../image/defaultHeadPortrait.png"}&gt;&lt;/img&gt;
-	&lt;/div&gt;
-	&lt;div className="ui-edit-notes-div"&gt;
-		&lt;span&gt;注：头像大小不得超过2M&lt;/span&gt;
-	&lt;/div&gt;
-	&lt;div className="ui-edit-notes-div"&gt;
-		&lt;span&gt;支持&lt;/span&gt;
-		&lt;span className="ui-color-red"&gt;*jpg、jpeg、png&lt;/span&gt;
-		&lt;span&gt;格式的图片上传&lt;/span&gt;
-	&lt;/div&gt;
-	&lt;form className="ui-display-none" action="/note/uploadIcon" method="post" encType="multipart/form-data" target="userImage"&gt;
-		&lt;input id="edit_file" onChange={this.handleFileChange} type="file" accept="image/*" name="image"&gt;&lt;/input&gt;
-		&lt;input id="edit_upload" type="submit" value="上传头像"&gt;&lt;/input&gt;
-	&lt;/form&gt;
-	&lt;iframe id="edit_iframe" name="userImage" className="ui-display-none"&gt;&lt;/iframe&gt;
-&lt;/div&gt;
+			<span class="nx">fs</span><span class="p">.</span><span class="nx">unlinkSync</span><span class="p">(</span><span class="nx">files</span><span class="p">.</span><span class="nx">image</span><span class="p">.</span><span class="nx">path</span><span class="p">);</span><span class="cm">/*删除缓存文件*/</span>
+			<span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">'uploadIcon successed'</span><span class="p">);</span>
+		<span class="p">})</span>
+	<span class="p">})</span>
+<span class="p">},</span>
+</code></pre></div> <h2 id="section-1">接下来是前端的实现</h2> <p>前端用了react，这里主要关注form即可。 form中填写action、method等必要字段，特别是不能忘记encType=”multipart/form-data”，否则不会http请求不会带上文件，只会将文件名发送过去。</p> <div class="highlighter-rouge"><pre class="highlight"><code> <span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">""</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"ui-edit-icon-div"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;img</span> <span class="na">onClick=</span><span class="s">{this.handleIconClick}</span> <span class="na">className=</span><span class="s">"img-responsive ui-edit-icon img-circle"</span> <span class="na">src=</span><span class="s">{this.state.userInformation.userImage+'?'+Math.random()</span> <span class="err">||</span> <span class="err">"../../</span><span class="na">image</span><span class="err">/</span><span class="na">defaultHeadPortrait</span><span class="err">.</span><span class="na">png</span><span class="err">"}</span><span class="nt">&gt;&lt;/img&gt;</span>
+	<span class="nt">&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"ui-edit-notes-div"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;span&gt;</span>注：头像大小不得超过2M<span class="nt">&lt;/span&gt;</span>
+	<span class="nt">&lt;/div&gt;</span>
+	<span class="nt">&lt;div</span> <span class="na">className=</span><span class="s">"ui-edit-notes-div"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;span&gt;</span>支持<span class="nt">&lt;/span&gt;</span>
+		<span class="nt">&lt;span</span> <span class="na">className=</span><span class="s">"ui-color-red"</span><span class="nt">&gt;</span>*jpg、jpeg、png<span class="nt">&lt;/span&gt;</span>
+		<span class="nt">&lt;span&gt;</span>格式的图片上传<span class="nt">&lt;/span&gt;</span>
+	<span class="nt">&lt;/div&gt;</span>
+	<span class="nt">&lt;form</span> <span class="na">className=</span><span class="s">"ui-display-none"</span> <span class="na">action=</span><span class="s">"/note/uploadIcon"</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">encType=</span><span class="s">"multipart/form-data"</span> <span class="na">target=</span><span class="s">"userImage"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"edit_file"</span> <span class="na">onChange=</span><span class="s">{this.handleFileChange}</span> <span class="na">type=</span><span class="s">"file"</span> <span class="na">accept=</span><span class="s">"image/*"</span> <span class="na">name=</span><span class="s">"image"</span><span class="nt">&gt;&lt;/input&gt;</span>
+		<span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"edit_upload"</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"上传头像"</span><span class="nt">&gt;&lt;/input&gt;</span>
+	<span class="nt">&lt;/form&gt;</span>
+	<span class="nt">&lt;iframe</span> <span class="na">id=</span><span class="s">"edit_iframe"</span> <span class="na">name=</span><span class="s">"userImage"</span> <span class="na">className=</span><span class="s">"ui-display-none"</span><span class="nt">&gt;&lt;/iframe&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
 </code></pre></div> <p>更详细的内容可以参考我的<a href="https://github.com/answershuto">Github</a>中的<a href="https://github.com/answershuto/Note">Note工程</a>。</p> </div> </article> <footer class="site-footer"> <div class="container"> <ul class="social"> <li><a href="http://github.com/answershuto" target="_blank"><i class="icon icon-github"></i></a></li> <li><a href="" target="_blank"><i class="icon icon-linkedin"></i></a></li> <li><a href="" target="_blank"><i class="icon icon-twitter"></i></a></li> </ul> <p> <br><small>&copy;2016 CaoYang , All rights reserved.</small> </p> </div> </footer> </main> <script src="/assets/js/jquery-2.1.1.js"></script> <script src="/assets/js/main.js"></script> </body> </html><!-- by nandomoreira.me -->
