@@ -7,7 +7,7 @@ permalink: /about/
 
 ## 简介:
 
->#### 我是染陌，一只开发者，目前从事web前端开发以及linux应用开发工作。
+>#### 我是染陌，目前从事web前端开发以及linux应用开发工作。
 
 >#### 爱读书，爱音乐，爱篮球。生活可以简单，但不可以粗糙。
 
@@ -27,7 +27,7 @@ permalink: /about/
 
 >#### Github: [https://github.com/answershuto](https://github.com/answershuto)
 
->#### Email: [answershuto@126.com](answershuto@126.com)
+>#### Email: [answershuto@126.com](answershuto@126.com) or [answershuto@gmail.com](answershuto@gmail.com)
 
 
 
