@@ -1,10 +1,10 @@
 ---
 layout: post
-title:  "JavaScript设计模式（ES6）"
+title:  "Node.js实现用户登陆session"
 date:   2017-01-04 20:52:00 +0800
 categories: jekyll update
 tags: [nodeJS] 
-excerpt: Node.js实现用户登陆session以及fetch不携带用户session问题
+excerpt: Node.js实现用户登陆session
 ---
 
 
