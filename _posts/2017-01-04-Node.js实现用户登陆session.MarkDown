@@ -1,0 +1,79 @@
+---
+layout: post
+title:  "JavaScript设计模式（ES6）"
+date:   2017-01-04 20:52:00 +0800
+categories: jekyll update
+tags: [nodeJS] 
+excerpt: Node.js实现用户登陆session以及fetch不携带用户session问题
+---
+
+
+
+# Node.js实现session
+
+
+
+## 关于session
+
+由于HTTP是一种无状态协议，所以无法在请求中保存用户登陆状态。
+
+session是是通过服务端保存的一个表结构来对应用户登陆状态，其在客户端的呈现就是cookie。
+
+其原理大概是这样：用户登陆以后服务端会自动生成一个较长的不重复随机数，及session，用该session作为key，用户信息及其他信息作为value，保存在内存或者数据库中，方便查询。服务端用setCookie的方式将session通过http返回给客户端并将session保存在浏览器的cookie中。下次客户端发起其他非登陆请求时会携带此cookie，到了服务端以后通过查阅之前的session表得知用户登陆状态并在成功的情况下得到用户信息。
+
+
+
+## session的实现
+
+这里我们用到两个模块，分别是express-session以及cookie-parser。
+
+用中间件到方式将cookie-parser加入到express中去，用以解析cookie，即得到session。
+
+```javascript
+let cookieParser = require('cookie-parser');
+app.use(cookieParser());
+```
+
+再加入express-session中间件。
+
+
+```javascript
+let session = require('express-session');
+app.use(session({
+		resave: false,
+		rolling: false,
+		saveUninitialized: true,
+		secret: RandomSecret(),
+		name: 'H5Session',
+		cookie: { maxAge: 60 * 1000}
+	}));
+```
+
+接着自己写一个中间件用以过滤请求。
+
+这里给出我自己项目的代码，
+
+成功登陆以后，给req.session.user赋值。
+
+在登陆以及注册请求是不需要校验的，直接next，有session的也next，走向下一个中间件，这段代码需要放在route代码之前。非登陆及注册请求的没有session的请求直接返回用户权限异常提示。
+
+```javascript
+req.session.user = {'userName': params.userName};
+```
+
+```javascript
+app.use(function(req,res,next){
+  if (!req.session.user) {
+    if (req.url === '/H5/Login' || req.url === '/H5/Register') {
+      next();/*请求为登陆或者注册则不需要校验session*/
+    }
+    else{
+      res.json({result: false, content: '用户权限异常'});
+    }
+  }
+  else if (req.session.user) {
+    next();
+  };
+})
+```
+
