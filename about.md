@@ -7,7 +7,7 @@ permalink: /about/
 
 ## 简介:
 
->#### 我是曹阳，目前从事web前端开发以及linux应用开发工作。
+>#### 我是曹阳，现前端开发，前嵌入式应用开发。
 
 >#### 爱读书，爱音乐，爱篮球。生活可以简单，但不可以粗糙。
 
@@ -19,7 +19,7 @@ permalink: /about/
 
 ## 关注领域：
 
->#### 前端开发、Node.js、linux嵌入式技术、web安全。
+>#### 大前端、Node.js、Web安全。
 
 <br><br>
 
@@ -27,7 +27,7 @@ permalink: /about/
 
 >#### Github: [https://github.com/answershuto](https://github.com/answershuto)
 
->#### Email: [answershuto@126.com](answershuto@126.com) or [answershuto@gmail.com](answershuto@gmail.com)
+>#### Email:  [answershuto@gmail.com](answershuto@gmail.com) or [answershuto@126.com](answershuto@126.com)
 
 
 
