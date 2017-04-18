@@ -1,0 +1,110 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>CSS居中的几种方式</title> <meta name="description" content="CSS居中的几种方式"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/jekyll/update/2017/04/18/CSS%E5%B1%85%E4%B8%AD%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F.html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">CSS居中的几种方式</h1> <p class="post-meta"><time datetime="2017-04-18T13:30:00+08:00" itemprop="datePublished">Apr 18, 2017</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <h2 id="section">水平居中</h2> <h3 id="inline-blocktext-align">使用inline-block以及text-align实现。</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">inline-block</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo1.html">Demo</a></p> <h3 id="table">使用table实现</h3> <p>这种方法可以不定宽居中。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+        
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">table</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">0px</span> <span class="nb">auto</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo2.html">Demo</a></p> <h3 id="margin-0-auto">使用margin: 0 auto实现</h3> <p>这种定位方法需要指定witdh。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span> <span class="nb">auto</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo3.html">Demo</a></p> <h3 id="flex">使用flex布局实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
+    <span class="nl">justify-content</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p>或者</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">0px</span> <span class="nb">auto</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo4.html">Demo</a></p> <h3 id="section-1">绝对定位</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+    <span class="nl">left</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">-50px</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p>或者将元素宽度的一般改成transform: translate(-50%)，这样不定宽的时候也可以实现居中，但是兼容性不是足够好。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+    <span class="nl">left</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+    <span class="nl">transform</span><span class="p">:</span> <span class="n">translate</span><span class="p">(</span><span class="m">-50%</span><span class="p">);</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo5.html">Demo</a></p> <h2 id="section-2">垂直居中</h2> <h3 id="vertical-align">使用vertical-align</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="nb">table-cell</span><span class="p">;</span>
+    <span class="nl">vertical-align</span><span class="p">:</span> <span class="nb">middle</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p>注意要设置height或者line-height。</p> <p><a href="/demos/CSS常见布局/demo6.html">Demo</a></p> <p>或者</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span><span class="n">inline-block</span><span class="p">;</span>
+    <span class="nl">vertical-align</span><span class="p">:</span> <span class="nb">middle</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo7.html">Demo</a></p> <h3 id="section-3">绝对定位</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">500px</span><span class="p">;</span>
+    <span class="nl">position</span><span class="p">:</span><span class="nb">relative</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+    <span class="nl">top</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">50px</span><span class="p">;</span>
+    <span class="nl">margin-top</span><span class="p">:</span> <span class="m">-25px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p>当然height的一半也可以用</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">transform</span><span class="nd">:translate</span><span class="o">(</span><span class="nt">0</span><span class="o">,</span><span class="nt">-50</span><span class="o">%);</span>
+</code></pre></div> <p>来替代。</p> <p><a href="/demos/CSS常见布局/demo8.html">Demo</a></p> <h3 id="flex-1">使用flex布局实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
+    <span class="nl">align-items</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo9.html">Demo</a></p> <h2 id="section-4">水平垂直居中</h2> <h3 id="flex-2">使用flex布局</h3> <p>利用flex布局的justify-content以及align-items修改弹性盒子纵向以及横向的对其位置，使子元素在纵向以及横向位置都以正中位置对其。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
+    <span class="nl">justify-content</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+    <span class="nl">align-items</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo10.html">Demo</a></p> <h3 id="section-5">使用绝对定位</h3> <p>使用绝对定位设置top以及left为50%，然后将宽度以及高度的一半“拉”回来。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+    <span class="nl">top</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+    <span class="nl">left</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+    <span class="nl">transform</span><span class="p">:</span> <span class="n">translate</span><span class="p">(</span><span class="m">-50%</span><span class="p">,</span><span class="m">-50%</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo11.html">Demo</a></p> <p>如果宽度高度指定的时候也可以通过设置负的margin来实现。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+    <span class="nl">top</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+    <span class="nl">left</span><span class="p">:</span> <span class="m">50%</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
+    <span class="nl">margin-left</span><span class="p">:</span> <span class="m">-50px</span><span class="p">;</span>
+    <span class="nl">margin-top</span><span class="p">:</span> <span class="m">-50px</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <h2 id="vertical-aligntext-aligninline-block">利用vertical-align,text-align,inline-block实现</h2> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span><span class="nb">table-cell</span><span class="p">;</span>
+    <span class="nl">vertical-align</span><span class="p">:</span> <span class="nb">middle</span><span class="p">;</span>
+    <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.ele</span><span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">inline-block</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo12.html">Demo</a></p> </div> </article> <footer class="site-footer"> <div class="container"> <ul class="social"> <li><a href="http://github.com/answershuto" target="_blank"><i class="icon icon-github"></i></a></li> </ul> <p> <br><small>&copy;2017 CaoYang , All rights reserved.</small> </p> </div> </footer> </main> <script src="/assets/js/jquery-2.1.1.js"></script> <script src="/assets/js/main.js"></script> </body> </html><!-- by nandomoreira.me -->
