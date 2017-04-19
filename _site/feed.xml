@@ -5,12 +5,12 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 19 Apr 2017 14:22:08 +0800</pubDate>
-    <lastBuildDate>Wed, 19 Apr 2017 14:22:08 +0800</lastBuildDate>
+    <pubDate>Wed, 19 Apr 2017 14:29:10 +0800</pubDate>
+    <lastBuildDate>Wed, 19 Apr 2017 14:29:10 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
-        <title>Css常见布局</title>
+        <title>CSS常见布局</title>
         <description>&lt;h2 id=&quot;section&quot;&gt;左列固定宽度，右列自适应&lt;/h2&gt;
 
 &lt;h3 id=&quot;flex&quot;&gt;使用flex布局实现&lt;/h3&gt;
@@ -27,7 +27,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo1.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo1.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;floatmargin&quot;&gt;使用float以及margin实现&lt;/h3&gt;
 
@@ -41,7 +41,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo2.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo2.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;floatoverflow&quot;&gt;使用float以及overflow实现&lt;/h3&gt;
 
@@ -57,7 +57,7 @@
 
 &lt;p&gt;通过设置overflow创建了一个(BFC)[http://www.cnblogs.com/cjlalala/p/5556855.html]，可以形成一个独立的容器，浮动盒区域不叠加在BFC上，容器内子元素不会影响到外面的元素，反之亦然。设置overflow:auto;等都能达到同样效果，只需要形成一个BFC。&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo3.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo3.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;table&quot;&gt;使用table实现&lt;/h3&gt;
 
@@ -75,7 +75,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo4.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo4.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;section-1&quot;&gt;右列固定宽度，左列自适应&lt;/h2&gt;
 
@@ -93,7 +93,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo5.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo5.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;floatmargin-1&quot;&gt;使用float以及margin实现&lt;/h3&gt;
 
@@ -109,7 +109,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo6.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo6.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;table-1&quot;&gt;使用table实现&lt;/h3&gt;
 
@@ -127,7 +127,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo7.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo7.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;section-2&quot;&gt;两侧固定宽度，中间自适应&lt;/h2&gt;
 
@@ -148,7 +148,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo8.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo8.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;floatmargin-2&quot;&gt;使用float以及margin布局&lt;/h3&gt;
 
@@ -171,7 +171,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo9.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo9.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;table-2&quot;&gt;使用table布局&lt;/h3&gt;
 
@@ -192,7 +192,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo10.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo10.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;section-3&quot;&gt;左列不定宽，右列自适应&lt;/h2&gt;
 
@@ -207,7 +207,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo11.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo11.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;table-3&quot;&gt;利用table实现&lt;/h3&gt;
 
@@ -227,7 +227,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo12.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo12.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;float&quot;&gt;利用float实现&lt;/h3&gt;
 
@@ -244,7 +244,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo13.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo13.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;section-4&quot;&gt;多列等分布局&lt;/h2&gt;
 
@@ -258,7 +258,7 @@
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo14.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo14.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;float-1&quot;&gt;利用float实现&lt;/h3&gt;
 
@@ -269,7 +269,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo15.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo15.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;table-4&quot;&gt;利用table实现&lt;/h3&gt;
 
@@ -284,12 +284,18 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;a href=&quot;../examples/CSS常见布局/demo16.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo16.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Wed, 19 Apr 2017 00:00:00 +0800</pubDate>
-        <link>/2017/04/19/CSS%E5%B8%B8%E8%A7%81%E5%B8%83%E5%B1%80.html</link>
-        <guid isPermaLink="true">/2017/04/19/CSS%E5%B8%B8%E8%A7%81%E5%B8%83%E5%B1%80.html</guid>
+        <pubDate>Wed, 19 Apr 2017 14:00:00 +0800</pubDate>
+        <link>/jekyll/update/2017/04/19/CSS%E5%B8%B8%E8%A7%81%E5%B8%83%E5%B1%80.html</link>
+        <guid isPermaLink="true">/jekyll/update/2017/04/19/CSS%E5%B8%B8%E8%A7%81%E5%B8%83%E5%B1%80.html</guid>
         
+        <category>CSS</category>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
         
       </item>
     

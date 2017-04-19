@@ -1,3 +1,12 @@
+---
+layout: post
+title:  "CSS常见布局"
+date:   2017-04-19 14:00:00 +0800
+categories: jekyll update
+tags: [CSS] 
+excerpt: CSS常见布局
+---
+
 ## 左列固定宽度，右列自适应
 
 ### 使用flex布局实现
@@ -14,7 +23,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo1.html)
+[Demo](/demos/CSS常见布局/demo1.html)
 
 ### 使用float以及margin实现
 
@@ -28,7 +37,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo2.html)
+[Demo](/demos/CSS常见布局/demo2.html)
 
 ### 使用float以及overflow实现
 
@@ -44,7 +53,7 @@
 
 通过设置overflow创建了一个(BFC)[http://www.cnblogs.com/cjlalala/p/5556855.html]，可以形成一个独立的容器，浮动盒区域不叠加在BFC上，容器内子元素不会影响到外面的元素，反之亦然。设置overflow:auto;等都能达到同样效果，只需要形成一个BFC。
 
-[Demo](../examples/CSS常见布局/demo3.html)
+[Demo](/demos/CSS常见布局/demo3.html)
 
 ### 使用table实现
 
@@ -62,7 +71,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo4.html)
+[Demo](/demos/CSS常见布局/demo4.html)
 
 ## 右列固定宽度，左列自适应
 
@@ -80,7 +89,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo5.html)
+[Demo](/demos/CSS常见布局/demo5.html)
 
 ### 使用float以及margin实现
 
@@ -96,7 +105,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo6.html)
+[Demo](/demos/CSS常见布局/demo6.html)
 
 ### 使用table实现
 
@@ -114,7 +123,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo7.html)
+[Demo](/demos/CSS常见布局/demo7.html)
 
 ## 两侧固定宽度，中间自适应
 
@@ -135,7 +144,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo8.html)
+[Demo](/demos/CSS常见布局/demo8.html)
 
 ### 使用float以及margin布局
 
@@ -158,7 +167,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo9.html)
+[Demo](/demos/CSS常见布局/demo9.html)
 
 ### 使用table布局
 
@@ -179,7 +188,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo10.html)
+[Demo](/demos/CSS常见布局/demo10.html)
 
 ## 左列不定宽，右列自适应
 
@@ -194,7 +203,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo11.html)
+[Demo](/demos/CSS常见布局/demo11.html)
 
 ### 利用table实现
 
@@ -214,7 +223,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo12.html)
+[Demo](/demos/CSS常见布局/demo12.html)
 
 ### 利用float实现
 
@@ -231,7 +240,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo13.html)
+[Demo](/demos/CSS常见布局/demo13.html)
 
 ## 多列等分布局
 
@@ -245,7 +254,7 @@
     flex: 1;
 }
 ```
-[Demo](../examples/CSS常见布局/demo14.html)
+[Demo](/demos/CSS常见布局/demo14.html)
 
 ### 利用float实现
 
@@ -256,7 +265,7 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo15.html)
+[Demo](/demos/CSS常见布局/demo15.html)
 
 ### 利用table实现
 
@@ -271,4 +280,4 @@
 }
 ```
 
-[Demo](../examples/CSS常见布局/demo16.html)
+[Demo](/demos/CSS常见布局/demo16.html)

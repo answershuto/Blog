@@ -1,8 +1,4 @@
-<h2 id="section">左列固定宽度，右列自适应</h2>
-
-<h3 id="flex">使用flex布局实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>CSS常见布局</title> <meta name="description" content="CSS常见布局"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/jekyll/update/2017/04/19/CSS%E5%B8%B8%E8%A7%81%E5%B8%83%E5%B1%80.html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">CSS常见布局</h1> <p class="post-meta"><time datetime="2017-04-19T14:00:00+08:00" itemprop="datePublished">Apr 19, 2017</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <h2 id="section">左列固定宽度，右列自适应</h2> <h3 id="flex">使用flex布局实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.l</span><span class="p">{</span>
@@ -11,44 +7,21 @@
 <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">flex</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo1.html">Demo</a></p>
-
-<h3 id="floatmargin">使用float以及margin实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.l</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo1.html">Demo</a></p> <h3 id="floatmargin">使用float以及margin实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.l</span><span class="p">{</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
     <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">margin-left</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo2.html">Demo</a></p>
-
-<h3 id="floatoverflow">使用float以及overflow实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.l</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo2.html">Demo</a></p> <h3 id="floatoverflow">使用float以及overflow实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.l</span><span class="p">{</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
     <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">overflow</span><span class="p">:</span> <span class="nb">hidden</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p>通过设置overflow创建了一个(BFC)[http://www.cnblogs.com/cjlalala/p/5556855.html]，可以形成一个独立的容器，浮动盒区域不叠加在BFC上，容器内子元素不会影响到外面的元素，反之亦然。设置overflow:auto;等都能达到同样效果，只需要形成一个BFC。</p>
-
-<p><a href="../examples/CSS常见布局/demo3.html">Demo</a></p>
-
-<h3 id="table">使用table实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p>通过设置overflow创建了一个(BFC)[http://www.cnblogs.com/cjlalala/p/5556855.html]，可以形成一个独立的容器，浮动盒区域不叠加在BFC上，容器内子元素不会影响到外面的元素，反之亦然。设置overflow:auto;等都能达到同样效果，只需要形成一个BFC。</p> <p><a href="/demos/CSS常见布局/demo3.html">Demo</a></p> <h3 id="table">使用table实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">table</span><span class="p">;</span>
     <span class="nl">table-layout</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
@@ -59,16 +32,7 @@
 <span class="nc">.r</span><span class="o">,</span> <span class="nc">.l</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="nb">table-cell</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo4.html">Demo</a></p>
-
-<h2 id="section-1">右列固定宽度，左列自适应</h2>
-
-<h3 id="flex-1">使用flex布局实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo4.html">Demo</a></p> <h2 id="section-1">右列固定宽度，左列自适应</h2> <h3 id="flex-1">使用flex布局实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.l</span><span class="p">{</span>
@@ -77,14 +41,7 @@
 <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo5.html">Demo</a></p>
-
-<h3 id="floatmargin-1">使用float以及margin实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.l</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo5.html">Demo</a></p> <h3 id="floatmargin-1">使用float以及margin实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.l</span><span class="p">{</span>
     <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
     <span class="nl">margin-right</span><span class="p">:</span> <span class="m">-100px</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
@@ -93,14 +50,7 @@
     <span class="nl">float</span><span class="p">:</span> <span class="nb">right</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo6.html">Demo</a></p>
-
-<h3 id="table-1">使用table实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo6.html">Demo</a></p> <h3 id="table-1">使用table实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">table</span><span class="p">;</span>
     <span class="nl">table-layout</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
@@ -111,16 +61,7 @@
 <span class="nc">.l</span><span class="o">,</span> <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="nb">table-cell</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo7.html">Demo</a></p>
-
-<h2 id="section-2">两侧固定宽度，中间自适应</h2>
-
-<h3 id="flex-2">使用flex布局</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo7.html">Demo</a></p> <h2 id="section-2">两侧固定宽度，中间自适应</h2> <h3 id="flex-2">使用flex布局</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.l</span><span class="p">{</span>
@@ -132,14 +73,7 @@
 <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo8.html">Demo</a></p>
-
-<h3 id="floatmargin-2">使用float以及margin布局</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code> <span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo8.html">Demo</a></p> <h3 id="floatmargin-2">使用float以及margin布局</h3> <div class="highlighter-rouge"><pre class="highlight"><code> <span class="nc">.container</span><span class="p">{</span>
             
 <span class="p">}</span>
 <span class="nc">.l</span><span class="p">{</span>
@@ -155,14 +89,7 @@
     <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100px</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo9.html">Demo</a></p>
-
-<h3 id="table-2">使用table布局</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo9.html">Demo</a></p> <h3 id="table-2">使用table布局</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">table</span><span class="p">;</span>
     <span class="nl">table-layout</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
@@ -176,29 +103,13 @@
 <span class="nc">.l</span><span class="o">,</span> <span class="nc">.r</span><span class="o">,</span> <span class="nc">.c</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="nb">table-cell</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo10.html">Demo</a></p>
-
-<h2 id="section-3">左列不定宽，右列自适应</h2>
-
-<h3 id="flex-3">利用flex实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo10.html">Demo</a></p> <h2 id="section-3">左列不定宽，右列自适应</h2> <h3 id="flex-3">利用flex实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">flex</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo11.html">Demo</a></p>
-
-<h3 id="table-3">利用table实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo11.html">Demo</a></p> <h3 id="table-3">利用table实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">table</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.l</span><span class="p">{</span>
@@ -211,16 +122,7 @@
 <span class="nc">.l</span><span class="o">,</span> <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="nb">table-cell</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo12.html">Demo</a></p>
-
-<h3 id="float">利用float实现</h3>
-
-<p>左侧元素浮动，右侧元素通过overflow形成BFC。</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.l</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo12.html">Demo</a></p> <h3 id="float">利用float实现</h3> <p>左侧元素浮动，右侧元素通过overflow形成BFC。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.l</span><span class="p">{</span>
     <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
     <span class="nl">background-color</span><span class="p">:</span> <span class="no">blanchedalmond</span><span class="p">;</span>
 <span class="p">}</span>
@@ -228,39 +130,17 @@
     <span class="nl">overflow</span><span class="p">:</span> <span class="nb">hidden</span><span class="p">;</span>
     <span class="nl">background-color</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo13.html">Demo</a></p>
-
-<h2 id="section-4">多列等分布局</h2>
-
-<h3 id="flex-4">利用flex实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo13.html">Demo</a></p> <h2 id="section-4">多列等分布局</h2> <h3 id="flex-4">利用flex实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.ele</span><span class="p">{</span>
     <span class="nl">flex</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-<p><a href="../examples/CSS常见布局/demo14.html">Demo</a></p>
-
-<h3 id="float-1">利用float实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.ele</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo14.html">Demo</a></p> <h3 id="float-1">利用float实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.ele</span><span class="p">{</span>
     <span class="nl">float</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">25%</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo15.html">Demo</a></p>
-
-<h3 id="table-4">利用table实现</h3>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo15.html">Demo</a></p> <h3 id="table-4">利用table实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">table</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
     <span class="nl">table-layout</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
@@ -268,7 +148,4 @@
 <span class="nc">.ele</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="nb">table-cell</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
-
-<p><a href="../examples/CSS常见布局/demo16.html">Demo</a></p>
+</code></pre></div> <p><a href="/demos/CSS常见布局/demo16.html">Demo</a></p> </div> </article> <footer class="site-footer"> <div class="container"> <ul class="social"> <li><a href="http://github.com/answershuto" target="_blank"><i class="icon icon-github"></i></a></li> </ul> <p> <br><small>&copy;2017 CaoYang , All rights reserved.</small> </p> </div> </footer> </main> <script src="/assets/js/jquery-2.1.1.js"></script> <script src="/assets/js/main.js"></script> </body> </html><!-- by nandomoreira.me -->
