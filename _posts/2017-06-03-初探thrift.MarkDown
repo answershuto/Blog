@@ -1,0 +1,147 @@
+---
+layout: post
+title:  "初探thrift"
+date:   2017-06-03 15:00:00 +0800
+categories: jekyll update
+tags: [thrift] 
+excerpt: thrift入门学习
+---
+
+## 什么是thrift？
+
+thrift是一个软件框架，用来进行可扩展且跨语言的服务的开发。它结合了功能强大的软件堆栈和代码生成引擎，以构建在 C++, Java, Python, PHP, Ruby, Erlang, Perl, Haskell, C#, Cocoa, JavaScript, Node.js, Smalltalk, and OCaml 这些编程语言间无缝结合的、高效的服务。
+
+[thrift介绍](http://baike.baidu.com/item/thrift?fr=aladdin)
+
+## 安装thrift
+
+在mac下安装thrift，只需要执行
+
+```bash
+    brew install thrift
+```
+
+## 如何使用
+
+建立一个后缀为.thrift的文件，用于让thrift代码引擎知道你需要生成哪些服务、错误类型以及rpc接口等。
+这里我们先创建一个test.thrift，内容如下。
+
+```thrift
+/**
+ * 错误类型
+ */
+enum AirExceptionType {
+    PASSWD_EXCEPTION = 0;
+	
+	USER_DIONLINE = 1;
+}
+
+/**
+ * 调用错误
+ */
+exception AirException {
+    /** 错误类型 */
+    1: required AirExceptionType type;
+
+    /** 错误码 */
+    2: required i64 errorCode;
+
+    /** 错误消息 */
+    3: required string errorMessage;
+
+    /** 调试信息 */
+    4: required string debugMessage;
+}
+
+/*一个thrift的服务，里面包含一些rpc接口*/
+service thriftTest {
+    	/**
+     * 连接服务器,返回Session
+     */
+	 string connectServer (
+		/** 设备编码(加密) */
+        1: string strDevCode;	
+
+    ) throws (
+        /** 抛出异常 */
+        1: AirException ex;
+    );
+
+	/**
+     * 与服务器断开连接
+     */
+	 void disconnectServer (
+		/** 用户Session */
+        1: string Session;	
+
+    ) throws (
+        /** 抛出异常 */
+        1: AirException ex;
+    );
+	
+	
+	/**
+     * 保活
+     */
+	 void keepAlive (
+		/** 用户Session */
+        1: string Session;	
+
+    ) throws (
+        /** 抛出异常 */
+        1: AirException ex;
+    );
+
+    /**
+     * 输入密码
+     */
+    void inputPasswd (
+        /** 用户Session */
+        1: string Session;
+
+		/** 锁类型 */
+        2: i32 iLockType;
+		
+        /** 密码 */
+        3: string strPassword;
+
+    ) throws (
+        /** 抛出异常 */
+        1: AirException ex;
+    );
+}
+
+```
+
+接着我们执行thrift语句，比如我们需要生成一个cpp的代码。
+
+```bash
+    thrift -gen cpp test.thrift
+```
+
+这时候我们可以发现，在同级目录下已经出现了一个gen-cpp的文件夹。
+
+```bash
+    ranmodeMacBook-Pro:thriftDemo ranmo$ thrift -gen cpp test.thrift
+    ranmodeMacBook-Pro:thriftDemo ranmo$ ls
+    gen-cpp		test.thrift
+```
+
+文件夹里是一些自动生成的.cpp文件以及.h头文件。
+
+```bash
+    ranmodeMacBook-Pro:thriftDemo ranmo$ cd gen-cpp/
+    ranmodeMacBook-Pro:gen-cpp ranmo$ ls
+    test_constants.cpp		test_types.cpp			thriftTest.cpp			thriftTest_server.skeleton.cpp
+    test_constants.h		test_types.h			thriftTest.h
+    ranmodeMacBook-Pro:gen-cpp ranmo$
+```
+
+同样，如果是c#语言，只需要执行
+
+```bash
+    thrift -gen csharp test.thrift
+```
+
+下面以C#语言为例，来说一下怎么使用这些产生的文件。
+

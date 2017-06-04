@@ -5,9 +5,162 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 19 Apr 2017 14:29:10 +0800</pubDate>
-    <lastBuildDate>Wed, 19 Apr 2017 14:29:10 +0800</lastBuildDate>
+    <pubDate>Sat, 03 Jun 2017 16:40:01 +0800</pubDate>
+    <lastBuildDate>Sat, 03 Jun 2017 16:40:01 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>初探thrift</title>
+        <description>&lt;h2 id=&quot;thrift&quot;&gt;什么是thrift？&lt;/h2&gt;
+
+&lt;p&gt;thrift是一个软件框架，用来进行可扩展且跨语言的服务的开发。它结合了功能强大的软件堆栈和代码生成引擎，以构建在 C++, Java, Python, PHP, Ruby, Erlang, Perl, Haskell, C#, Cocoa, JavaScript, Node.js, Smalltalk, and OCaml 这些编程语言间无缝结合的、高效的服务。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://baike.baidu.com/item/thrift?fr=aladdin&quot;&gt;thrift介绍&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;thrift-1&quot;&gt;安装thrift&lt;/h2&gt;
+
+&lt;p&gt;在mac下安装thrift，只需要执行&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    brew install thrift
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;如何使用&lt;/h2&gt;
+
+&lt;p&gt;建立一个后缀为.thrift的文件，用于让thrift代码引擎知道你需要生成哪些服务、错误类型以及rpc接口等。
+这里我们先创建一个test.thrift，内容如下。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-thrift&quot;&gt;/**
+ * 错误类型
+ */
+enum AirExceptionType {
+    PASSWD_EXCEPTION = 0;
+	
+	USER_DIONLINE = 1;
+}
+
+/**
+ * 调用错误
+ */
+exception AirException {
+    /** 错误类型 */
+    1: required AirExceptionType type;
+
+    /** 错误码 */
+    2: required i64 errorCode;
+
+    /** 错误消息 */
+    3: required string errorMessage;
+
+    /** 调试信息 */
+    4: required string debugMessage;
+}
+
+/*一个thrift的服务，里面包含一些rpc接口*/
+service thriftTest {
+    	/**
+     * 连接服务器,返回Session
+     */
+	 string connectServer (
+		/** 设备编码(加密) */
+        1: string strDevCode;	
+
+    ) throws (
+        /** 抛出异常 */
+        1: AirException ex;
+    );
+
+	/**
+     * 与服务器断开连接
+     */
+	 void disconnectServer (
+		/** 用户Session */
+        1: string Session;	
+
+    ) throws (
+        /** 抛出异常 */
+        1: AirException ex;
+    );
+	
+	
+	/**
+     * 保活
+     */
+	 void keepAlive (
+		/** 用户Session */
+        1: string Session;	
+
+    ) throws (
+        /** 抛出异常 */
+        1: AirException ex;
+    );
+
+    /**
+     * 输入密码
+     */
+    void inputPasswd (
+        /** 用户Session */
+        1: string Session;
+
+		/** 锁类型 */
+        2: i32 iLockType;
+		
+        /** 密码 */
+        3: string strPassword;
+
+    ) throws (
+        /** 抛出异常 */
+        1: AirException ex;
+    );
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接着我们执行thrift语句，比如我们需要生成一个cpp的代码。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    thrift -gen cpp test.thrift
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这时候我们可以发现，在同级目录下已经出现了一个gen-cpp的文件夹。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    ranmodeMacBook-Pro:thriftDemo ranmo&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;thrift -gen cpp test.thrift
+    ranmodeMacBook-Pro:thriftDemo ranmo&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls
+    gen-cpp		test.thrift
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;文件夹里是一些自动生成的.cpp文件以及.h头文件。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    ranmodeMacBook-Pro:thriftDemo ranmo&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;gen-cpp/
+    ranmodeMacBook-Pro:gen-cpp ranmo&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls
+    test_constants.cpp		test_types.cpp			thriftTest.cpp			thriftTest_server.skeleton.cpp
+    test_constants.h		test_types.h			thriftTest.h
+    ranmodeMacBook-Pro:gen-cpp ranmo&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;同样，如果是c#语言，只需要执行&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    thrift -gen csharp test.thrift
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;下面以C#语言为例，来说一下怎么使用这些产生的文件。&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 03 Jun 2017 15:00:00 +0800</pubDate>
+        <link>/jekyll/update/2017/06/03/%E5%88%9D%E6%8E%A2thrift.html</link>
+        <guid isPermaLink="true">/jekyll/update/2017/06/03/%E5%88%9D%E6%8E%A2thrift.html</guid>
+        
+        <category>thrift</category>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
     
       <item>
         <title>CSS常见布局</title>
@@ -55,7 +208,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;通过设置overflow创建了一个(BFC)[http://www.cnblogs.com/cjlalala/p/5556855.html]，可以形成一个独立的容器，浮动盒区域不叠加在BFC上，容器内子元素不会影响到外面的元素，反之亦然。设置overflow:auto;等都能达到同样效果，只需要形成一个BFC。&lt;/p&gt;
+&lt;p&gt;通过设置overflow创建了一个&lt;a href=&quot;http://www.cnblogs.com/cjlalala/p/5556855.html&quot;&gt;BFC&lt;/a&gt;，可以形成一个独立的容器，浮动盒区域不叠加在BFC上，容器内子元素不会影响到外面的元素，反之亦然。设置overflow:auto;等都能达到同样效果，只需要形成一个BFC。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;/demos/CSS常见布局/demo3.html&quot;&gt;Demo&lt;/a&gt;&lt;/p&gt;
 
@@ -1389,43 +1542,6 @@ form中填写action、method等必要字段，特别是不能忘记encType=”mu
         <guid isPermaLink="true">/jekyll/update/2016/08/28/img-css%E7%AD%89%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%BC%93%E5%AD%98%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html</guid>
         
         <category>前端</category>
-        
-        
-        <category>jekyll</category>
-        
-        <category>update</category>
-        
-      </item>
-    
-      <item>
-        <title>用safari对移动设备进行远程调试</title>
-        <description>&lt;p&gt;因为在写一个基于移动设备陀螺仪功能的小游戏，所以遇到了这个移动设备调试的问题，在网上找到了用safari远程调试的方法，记录一下。&lt;/p&gt;
-
-&lt;p&gt;工具：Mac iPhone&lt;/p&gt;
-
-&lt;p&gt;1.首先需要在iPhone上打开Safari的远程调试功能，进入“设置”-&amp;gt;“Safari”-&amp;gt;“高级选项”中开启Web检查器。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/Safari/iphone.PNG&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;2.打开Safari开启需要调试的网页。&lt;/p&gt;
-
-&lt;p&gt;3.用数据线连接Mac，打开Mac上的Safari，如果没有开启开发者选项的话需要先开启开发者选项（点击Safari的偏好设置-&amp;gt;高级-&amp;gt;勾选“在菜单栏中显示“开发”菜单”，这样开发菜单就会出现了）。然后在开发菜单中选择刚才的iPhone设备（这里应该是显示的是别名）。接着就可以用Web检查器愉快地调试了。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/Safari/kaifa.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;img src=&quot;/img/Safari/tiaoshi.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-</description>
-        <pubDate>Fri, 17 Jun 2016 23:40:00 +0800</pubDate>
-        <link>/jekyll/update/2016/06/17/%E7%94%A8safari%E5%AF%B9%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95.html</link>
-        <guid isPermaLink="true">/jekyll/update/2016/06/17/%E7%94%A8safari%E5%AF%B9%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95.html</guid>
-        
-        <category>远程调试</category>
         
         
         <category>jekyll</category>

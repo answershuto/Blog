@@ -21,7 +21,7 @@
 <span class="nc">.r</span><span class="p">{</span>
     <span class="nl">overflow</span><span class="p">:</span> <span class="nb">hidden</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div> <p>通过设置overflow创建了一个(BFC)[http://www.cnblogs.com/cjlalala/p/5556855.html]，可以形成一个独立的容器，浮动盒区域不叠加在BFC上，容器内子元素不会影响到外面的元素，反之亦然。设置overflow:auto;等都能达到同样效果，只需要形成一个BFC。</p> <p><a href="/demos/CSS常见布局/demo3.html">Demo</a></p> <h3 id="table">使用table实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+</code></pre></div> <p>通过设置overflow创建了一个<a href="http://www.cnblogs.com/cjlalala/p/5556855.html">BFC</a>，可以形成一个独立的容器，浮动盒区域不叠加在BFC上，容器内子元素不会影响到外面的元素，反之亦然。设置overflow:auto;等都能达到同样效果，只需要形成一个BFC。</p> <p><a href="/demos/CSS常见布局/demo3.html">Demo</a></p> <h3 id="table">使用table实现</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="n">table</span><span class="p">;</span>
     <span class="nl">table-layout</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
     <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
