@@ -13,6 +13,8 @@ thrift是一个软件框架，用来进行可扩展且跨语言的服务的开�
 
 [thrift介绍](http://baike.baidu.com/item/thrift?fr=aladdin)
 
+---
+
 ## 安装thrift
 
 在mac下安装thrift，只需要执行
@@ -20,6 +22,8 @@ thrift是一个软件框架，用来进行可扩展且跨语言的服务的开�
 ```bash
     brew install thrift
 ```
+
+---
 
 ## 如何使用
 
@@ -143,5 +147,95 @@ service thriftTest {
     thrift -gen csharp test.thrift
 ```
 
-下面以C#语言为例，来说一下怎么使用这些产生的文件。
+下面以C#语言为例，来说一下这些文件的作用以及如何使用这些产生的文件。
 
+---
+
+### 产生的文件
+
+可以看到运行命令以后产生了三个.cs文件
+
+```bash
+    ranmodeMacBook-Pro:gen-csharp ranmo$ ls
+    AirException.cs		AirExceptionType.cs	thriftTest.cs
+```
+
+AirException.cs是抛出错误的文件
+AirExceptionType.cs是定义错误类型的文件
+thriftTest.cs是一个类，里面提供了一个interface Iface用来作为服务端的基类，继承后实现其接口作为RPC接口。class Client是一个客户端类，用来创建客户端调用服务端接口的实例。
+
+---
+
+### 服务端
+
+首先倒入thrift相关模块
+
+```c#
+    /*Thrift相关*/
+    using Thrift.Collections;
+    using Thrift.Protocol;
+    using Thrift.Server;
+    using Thrift.Transport;
+
+    /*线程相关*/
+    using System.Threading;
+
+    /*IO相关*/
+    using System.IO.Ports;
+
+```
+
+初始化thrift服务端
+
+```c#
+    const int THRIFT_MAIN_SERVER_PORT = 7911;//thrift服务端口号   
+
+    TServerSocket serverTransport = new TServerSocket(THRIFT_MAIN_SERVER_PORT, 0, false);
+    passwordLock.Processor processor = new passwordLock.Processor(new CThrift());
+    //TServer server = new TSimpleServer(processor, serverTransport);
+    TThreadedServer server = new TThreadedServer(processor, serverTransport);//使用多线程方法启动thrift服务
+
+    /*thrift服务启动*/
+    server.Serve();
+```
+
+注意，这边开启thrift进程的时候，传入了一个CThrift的实例，这个实例就是具体的服务端接口实现。将基类中的相关方法继承并且实现，形成RPC接口。
+
+```c#
+    /*Thrift实现类*/
+        public class CThrift : passwordLock.Iface
+        {
+
+            public CThrift()
+            {
+                //...实现
+            }
+
+            //...继承后rpc接口实现
+        }
+```
+
+---
+
+### 客户端
+
+客户端需要用到thrift文件中的一个client类，用它创建实例来完成接口调用工作。
+
+```c#
+    TTransport transport = new TSocket(strIP, iPort);
+    TProtocol Potocol = new TBinaryProtocol(transport);
+    passwordLock.Client client = new passwordLock.Client(Potocol);
+    transport.Open();
+```
+
+初始化好客户端段client实例后，就可以直接用这个实例的方法来调用服务端的接口了。
+
+```c#
+    client.connectServer("devCode");
+```
+
+---
+
+## Demo
+
+这是我写的一个[Demo](https://github.com/answershuto/PasswordLockByThrift)，希望可以给你带来帮助。
