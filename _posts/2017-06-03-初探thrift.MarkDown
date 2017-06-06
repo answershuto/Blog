@@ -13,6 +13,10 @@ thrift是一个软件框架，用来进行可扩展且跨语言的服务的开�
 
 [thrift介绍](http://baike.baidu.com/item/thrift?fr=aladdin)
 
+thrift只构建系统中的RPC层。
+
+![img](https://ooo.0o0.ooo/2017/06/06/59368c1e1f17f.png)
+
 ---
 
 ## 安装thrift

@@ -5,8 +5,8 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 05 Jun 2017 18:06:47 +0800</pubDate>
-    <lastBuildDate>Mon, 05 Jun 2017 18:06:47 +0800</lastBuildDate>
+    <pubDate>Tue, 06 Jun 2017 19:07:03 +0800</pubDate>
+    <lastBuildDate>Tue, 06 Jun 2017 19:07:03 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -16,6 +16,10 @@
 &lt;p&gt;thrift是一个软件框架，用来进行可扩展且跨语言的服务的开发。它结合了功能强大的软件堆栈和代码生成引擎，以构建在 C++, Java, Python, PHP, Ruby, Erlang, Perl, Haskell, C#, Cocoa, JavaScript, Node.js, Smalltalk, and OCaml 这些编程语言间无缝结合的、高效的服务。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://baike.baidu.com/item/thrift?fr=aladdin&quot;&gt;thrift介绍&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;thrift只构建系统中的RPC层。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://ooo.0o0.ooo/2017/06/06/59368c1e1f17f.png&quot; alt=&quot;img&quot; /&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
