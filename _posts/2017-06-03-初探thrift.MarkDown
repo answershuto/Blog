@@ -172,7 +172,7 @@ thriftTest.cs是一个类，里面提供了一个interface Iface用来作为服�
 
 ### 服务端
 
-首先倒入thrift相关模块
+首先导入thrift相关模块
 
 ```c#
     /*Thrift相关*/

@@ -95,7 +95,7 @@ service thriftTest {
 </code></pre></div> <p>同样，如果是c#语言，只需要执行</p> <div class="highlighter-rouge"><pre class="highlight"><code>    thrift -gen csharp test.thrift
 </code></pre></div> <p>下面以C#语言为例，来说一下这些文件的作用以及如何使用这些产生的文件。</p> <hr /> <h3 id="section-1">产生的文件</h3> <p>可以看到运行命令以后产生了三个.cs文件</p> <div class="highlighter-rouge"><pre class="highlight"><code>    ranmodeMacBook-Pro:gen-csharp ranmo<span class="nv">$ </span>ls
     AirException.cs		AirExceptionType.cs	thriftTest.cs
-</code></pre></div> <p>AirException.cs是抛出错误的文件 AirExceptionType.cs是定义错误类型的文件 thriftTest.cs是一个类，里面提供了一个interface Iface用来作为服务端的基类，继承后实现其接口作为RPC接口。class Client是一个客户端类，用来创建客户端调用服务端接口的实例。</p> <hr /> <h3 id="section-2">服务端</h3> <p>首先倒入thrift相关模块</p> <div class="highlighter-rouge"><pre class="highlight"><code>    <span class="cm">/*Thrift相关*/</span>
+</code></pre></div> <p>AirException.cs是抛出错误的文件 AirExceptionType.cs是定义错误类型的文件 thriftTest.cs是一个类，里面提供了一个interface Iface用来作为服务端的基类，继承后实现其接口作为RPC接口。class Client是一个客户端类，用来创建客户端调用服务端接口的实例。</p> <hr /> <h3 id="section-2">服务端</h3> <p>首先导入thrift相关模块</p> <div class="highlighter-rouge"><pre class="highlight"><code>    <span class="cm">/*Thrift相关*/</span>
     <span class="k">using</span> <span class="nn">Thrift.Collections</span><span class="p">;</span>
     <span class="k">using</span> <span class="nn">Thrift.Protocol</span><span class="p">;</span>
     <span class="k">using</span> <span class="nn">Thrift.Server</span><span class="p">;</span>

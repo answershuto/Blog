@@ -1,0 +1,79 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>响应式原理</title> <meta name="description" content="thrift入门学习"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/jekyll/update/2017/06/24/Vue.js%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90-%E4%B8%80-%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86.html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">响应式原理</h1> <p class="post-meta"><time datetime="2017-06-24T15:13:00+08:00" itemprop="datePublished">Jun 24, 2017</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <h2 id="section">为什么要依赖收集</h2> <p>先看下面这段代码</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+    <span class="na">template</span><span class="p">:</span> 
+        <span class="err">`</span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="na">text1</span><span class="p">:</span><span class="o">&lt;</span><span class="sr">/span&gt;</span><span class="err"> 
+</span>            <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="na">text2</span><span class="p">:</span><span class="o">&lt;</span><span class="sr">/span&gt;</span><span class="err"> 
+</span>        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="err">`</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">text1</span><span class="p">:</span> <span class="s1">'text1'</span><span class="p">,</span>
+        <span class="na">text2</span><span class="p">:</span> <span class="s1">'text2'</span><span class="p">,</span>
+        <span class="na">text3</span><span class="p">:</span> <span class="s1">'text3'</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div> <p>按照之前《Vue.js源码学习笔记（一）——响应式原理》中的方法进行绑定则会出现一个问题——text3在实际模板中并没有被用到，然而当text3的数据被修改的时候（this.text3 = ‘test’）的时候，同样会触发text3的setter导致重新执行渲染，这显然不正确。</p> <h2 id="dep">先说说Dep</h2> <p>当对data上的对象进行修改值的时候会触发它的setter，那么取值的时候自然就会触发getter事件，所以我们只要在最开始进行一次render，那么所有被渲染所依赖的data中的数据就会被getter收集到Dep的subs中去。在对data中的数据进行修改的时候setter只会触发Dep的subs的函数。</p> <p>定义一个依赖收集类Dep。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kr">class</span> <span class="nx">Dep</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">constructor</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">subs</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="p">}</span>
+
+    <span class="nx">addSub</span> <span class="p">(</span><span class="nx">sub</span><span class="err">:</span> <span class="nx">Watcher</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">subs</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sub</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nx">removeSub</span> <span class="p">(</span><span class="nx">sub</span><span class="err">:</span> <span class="nx">Watcher</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">remove</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">subs</span><span class="p">,</span> <span class="nx">sub</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="nx">notify</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// stabilize the subscriber list first</span>
+        <span class="kr">const</span> <span class="nx">subs</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">subs</span><span class="p">.</span><span class="nx">slice</span><span class="p">()</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">subs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">subs</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">update</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <h2 id="watcher">Watcher</h2> <p>订阅者，当依赖收集的时候回addSub到sub中，在修改data中数据的时候会触发Watcher的notify，从而回调渲染函数。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kr">class</span> <span class="nx">Watcher</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">constructor</span> <span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">expOrFn</span><span class="p">,</span> <span class="nx">cb</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">cb</span> <span class="o">=</span> <span class="nx">cb</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">vm</span> <span class="o">=</span> <span class="nx">vm</span><span class="p">;</span>
+
+        <span class="cm">/*在这里将观察者本身赋值给全局的target，只有被target标记过的才会进行依赖收集*/</span>
+        <span class="nx">Dep</span><span class="p">.</span><span class="nx">target</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+        <span class="cm">/*触发渲染操作进行依赖收集*/</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">cb</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vm</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nx">update</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">cb</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vm</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <h2 id="section-1">开始依赖收集</h2> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kr">class</span> <span class="nx">Vue</span> <span class="p">{</span>
+    <span class="nx">constructor</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_data</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+        <span class="nx">observer</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_data</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">render</span><span class="p">);</span>
+        <span class="kd">let</span> <span class="nx">watcher</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Watcher</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">defineReactive</span> <span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+    <span class="err">／</span><span class="o">*</span><span class="err">在闭包内存储一个</span><span class="nx">Dep</span><span class="err">对象</span><span class="o">*</span><span class="err">／</span>
+    <span class="kr">const</span> <span class="nx">dep</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dep</span><span class="p">();</span>
+
+    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">enumerable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">configurable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">get</span><span class="p">:</span> <span class="p">()</span><span class="o">=&gt;</span><span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">Dep</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+                <span class="cm">/*Watcher对象存在全局的Dep.target中*/</span>
+                <span class="nx">dep</span><span class="p">.</span><span class="nx">addSub</span><span class="p">(</span><span class="nx">Dep</span><span class="p">.</span><span class="nx">target</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="na">set</span><span class="p">:</span><span class="nx">newVal</span><span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="cm">/*只有之前addSub中的函数才会触发*/</span>
+            <span class="nx">dep</span><span class="p">.</span><span class="nx">notify</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="nx">Dep</span><span class="p">.</span><span class="nx">target</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</code></pre></div> <p>将观察者Watcher实例赋值给全局的Dep.target，然后触发render操作只有被Dep.target标记过的才会进行依赖收集。有Dep.target的对象会讲Watcher的实例push到subs中，在对象被修改出发setter操作的时候dep会调用subs中的Watcher实例的update方法进行渲染。</p> </div> </article> <footer class="site-footer"> <div class="container"> <ul class="social"> <li><a href="http://github.com/answershuto" target="_blank"><i class="icon icon-github"></i></a></li> </ul> <p> <br><small>&copy;2017 CaoYang , All rights reserved.</small> </p> </div> </footer> </main> <script src="/assets/js/jquery-2.1.1.js"></script> <script src="/assets/js/main.js"></script> </body> </html><!-- by nandomoreira.me -->
