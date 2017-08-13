@@ -5,8 +5,8 @@
     <description></description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 12 Aug 2017 22:09:45 +0800</pubDate>
-    <lastBuildDate>Sat, 12 Aug 2017 22:09:45 +0800</lastBuildDate>
+    <pubDate>Sun, 13 Aug 2017 16:15:31 +0800</pubDate>
+    <lastBuildDate>Sun, 13 Aug 2017 16:15:31 +0800</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
@@ -21,6 +21,8 @@
 &lt;h2 id=&quot;vue-1&quot;&gt;Vue组件间通信&lt;/h2&gt;
 
 &lt;h3 id=&quot;section&quot;&gt;父组件向子组件通信&lt;/h3&gt;
+
+&lt;h4 id=&quot;props&quot;&gt;方法一：props&lt;/h4&gt;
 
 &lt;p&gt;使用&lt;a href=&quot;https://cn.vuejs.org/v2/guide/components.html#Prop&quot;&gt;props&lt;/a&gt;，父组件可以使用props向子组件传递数据。&lt;/p&gt;
 
@@ -66,6 +68,12 @@ export default {
 &amp;lt;/script&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;children&quot;&gt;方法二 使用$children&lt;/h4&gt;
+
+&lt;p&gt;使用&lt;a href=&quot;https://cn.vuejs.org/v2/api/#vm-children&quot;&gt;$children&lt;/a&gt;可以在父组件中访问子组件。&lt;/p&gt;
 
 &lt;p&gt;&lt;br /&gt; 
 &lt;br /&gt;&lt;/p&gt;
@@ -129,11 +137,17 @@ export default {
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;props&quot;&gt;方法二： 通过修改父组件传递的props来修改父组件数据&lt;/h4&gt;
+&lt;h4 id=&quot;props-1&quot;&gt;方法二： 通过修改父组件传递的props来修改父组件数据&lt;/h4&gt;
 
 &lt;p&gt;这种方法只能在父组件传递一个引用变量时可以使用，字面变量无法达到相应效果。因为饮用变量最终无论是父组件中的数据还是子组件得到的props中的数据都是指向同一块内存地址，所以修改了子组件中props的数据即修改了父组件的数据。&lt;/p&gt;
 
 &lt;p&gt;但是并不推荐这么做，并不建议直接修改props的值，如果数据是用于显示修改的，在实际开发中我经常会将其放入data中，在需要回传给父组件的时候再用事件回传数据。这样做保持了组件独立以及解耦，不会因为使用同一份数据而导致数据流异常混乱，只通过特定的接口传递数据来达到修改数据的目的，而内部数据状态由专门的data负责管理。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;parent&quot;&gt;方法三：使用$parent&lt;/h4&gt;
+
+&lt;p&gt;使用&lt;a href=&quot;https://cn.vuejs.org/v2/api/#vm-parent&quot;&gt;$parent&lt;/a&gt;可以访问父组件的数据。&lt;/p&gt;
 
 &lt;p&gt;&lt;br /&gt;
 &lt;br /&gt;&lt;/p&gt;
