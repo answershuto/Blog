@@ -4,7 +4,7 @@ title:  "VirtualDOM与diff(Vue实现)"
 date:   2017-09-03 20:12:00 +0800
 categories: jekyll update
 tags: [Vue.js] 
-excerpt: -VirtualDOM与diff(Vue实现)
+excerpt: VirtualDOM与diff(Vue实现)
 ---
 
 ## VNode

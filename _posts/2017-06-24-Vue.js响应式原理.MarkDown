@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "响应式原理"
+title:  "Vue.js响应式原理"
 date:   2017-06-24 15:13:00 +0800
 tags: [Vue.js] 
 excerpt: Vue.js响应式原理

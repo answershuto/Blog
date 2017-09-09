@@ -1,0 +1,592 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>从Vue.js源码角度再看数据绑定</title> <meta name="description" content="从源码角度再看数据绑定"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/2017/07/08/%E4%BB%8EVue.js%E6%BA%90%E7%A0%81%E8%A7%92%E5%BA%A6%E5%86%8D%E7%9C%8B%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A.html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">从Vue.js源码角度再看数据绑定</h1> <p class="post-meta"><time datetime="2017-07-08T21:18:00+08:00" itemprop="datePublished">Jul 8, 2017</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <h2 id="section">写在前面</h2> <p>因为对Vue.js很感兴趣所以花了些时间研究了一下框架的源码，从中学习到了很多，感谢尤大大。</p> <p>之后会以博客的形式慢慢地输出一些新的学习心得以及总结。</p> <p>原文都发表在我的<a href="https://github.com/answershuto/learnVue">github</a>上。</p> <p>以及我在阅读源码的过程中为Vue.js加上了部分<a href="https://github.com/answershuto/learnVue/tree/master/vue-src">注释</a>，希望可以给有需要阅读Vue.js源码的朋友带来一些帮助。</p> <p>如果我的理解有一些偏差，欢迎在评论中或者提<a href="https://github.com/answershuto/learnVue/issues">issue</a>指出，共同学习，共同进步。</p> <p>前面已经讲过Vue数据绑定的原理了，现在从源码来看一下数据绑定在Vue中是如何实现的。</p> <p>首先看一下Vue.js官网介绍响应式原理的这张图。</p> <p><img src="https://cn.vuejs.org/images/data.png" alt="img" /></p> <p>这张图比较清晰地展示了整个流程，首先通过一次渲染操作触发Data的getter（这里保证只有视图中需要被用到的data才会触发getter）进行依赖收集，这时候其实Watcher与data可以看成一种被绑定的状态（实际上是data的闭包中有一个Deps订阅着，在修改的时候会通知所有的Watcher观察者），在data发生变化的时候会触发它的setter，setter通知Watcher，Watcher进行回调通知组件重新渲染的函数，之后根据diff算法来决定是否发生视图的更新。</p> <p>Vue在初始化组件数据时，在生命周期的<a href="https://github.com/vuejs/vue/blob/dev/src/core/instance/init.js#L55">beforeCreate</a>与<a href="https://github.com/vuejs/vue/blob/dev/src/core/instance/init.js#L59">created</a>钩子函数之间实现了对<a href="https://github.com/vuejs/vue/blob/dev/src/core/instance/state.js#L43">data、props、computed、methods、events以及watch</a>的处理。</p> <h2 id="initdata">initData</h2> <p>这里来讲一下<a href="https://github.com/vuejs/vue/blob/dev/src/core/instance/state.js#L107">initData</a>，可以参考源码instance下的state.js文件，下面所有的中文注释都是我加的，英文注释是由大大加的，请不要忽略英文注释，英文注释都讲到了比较关键或者晦涩难懂的点。</p> <p>加注释版的vue源码也可以直接通过<a href="https://github.com/answershuto/learnVue/tree/master/vue-src">传送门</a>查看，这些是我在阅读Vue源码过程中加的注释，持续更新中。</p> <p>initData主要是初始化data中的数据，将数据进行Oberver，监听数据的变化，其他的监视原理一致，这里以data为例。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">initData</span> <span class="p">(</span><span class="nx">vm</span><span class="err">:</span> <span class="nx">Component</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="cm">/*得到data数据*/</span>
+  <span class="kd">let</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">$options</span><span class="p">.</span><span class="nx">data</span>
+  <span class="nx">data</span> <span class="o">=</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">_data</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">data</span> <span class="o">===</span> <span class="s1">'function'</span>
+    <span class="p">?</span> <span class="nx">getData</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">vm</span><span class="p">)</span>
+    <span class="p">:</span> <span class="nx">data</span> <span class="o">||</span> <span class="p">{}</span>
+
+  <span class="cm">/*判断是否是对象*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span> <span class="nx">warn</span><span class="p">(</span>
+      <span class="s1">'data functions should return an object:\n'</span> <span class="o">+</span>
+      <span class="s1">'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function'</span><span class="p">,</span>
+      <span class="nx">vm</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="c1">// proxy data on instance</span>
+  <span class="cm">/*遍历data对象*/</span>
+  <span class="kr">const</span> <span class="nx">keys</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+  <span class="kr">const</span> <span class="nx">props</span> <span class="o">=</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">$options</span><span class="p">.</span><span class="nx">props</span>
+  <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">length</span>
+
+  <span class="c1">//遍历data中的数据</span>
+  <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/*保证data中的key不与props中的key重复，props优先，如果有冲突会产生warning*/</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">props</span> <span class="o">&amp;&amp;</span> <span class="nx">hasOwn</span><span class="p">(</span><span class="nx">props</span><span class="p">,</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+      <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span> <span class="nx">warn</span><span class="p">(</span>
+        <span class="err">`</span><span class="nx">The</span> <span class="nx">data</span> <span class="nx">property</span> <span class="s2">"${keys[i]}"</span> <span class="nx">is</span> <span class="nx">already</span> <span class="nx">declared</span> <span class="nx">as</span> <span class="nx">a</span> <span class="nx">prop</span><span class="p">.</span> <span class="err">`</span> <span class="o">+</span>
+        <span class="err">`</span><span class="nx">Use</span> <span class="nx">prop</span> <span class="k">default</span> <span class="nx">value</span> <span class="nx">instead</span><span class="p">.</span><span class="err">`</span><span class="p">,</span>
+        <span class="nx">vm</span>
+      <span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isReserved</span><span class="p">(</span><span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+      <span class="cm">/*判断是否是保留字段*/</span>
+
+      <span class="cm">/*这里是我们前面讲过的代理，将data上面的属性代理到了vm实例上*/</span>
+      <span class="nx">proxy</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="err">`</span><span class="nx">_data</span><span class="err">`</span><span class="p">,</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="c1">// observe data</span>
+  <span class="cm">/*从这里开始我们要observe了，开始对数据进行绑定，这里有尤大大的注释asRootData，这步作为根数据，下面会进行递归observe进行对深层对象的绑定。*/</span>
+  <span class="nx">observe</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kc">true</span> <span class="cm">/* asRootData */</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div> <p>其实这段代码主要做了两件事，一是将_data上面的数据代理到vm上，另一件事通过observe将所有数据变成observable。</p> <h2 id="proxy">proxy</h2> <p>接下来看一下proxy代理。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/*添加代理*/</span>
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">proxy</span> <span class="p">(</span><span class="nx">target</span><span class="err">:</span> <span class="nb">Object</span><span class="p">,</span> <span class="nx">sourceKey</span><span class="err">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">key</span><span class="err">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">sharedPropertyDefinition</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">proxyGetter</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">[</span><span class="nx">sourceKey</span><span class="p">][</span><span class="nx">key</span><span class="p">]</span>
+  <span class="p">}</span>
+  <span class="nx">sharedPropertyDefinition</span><span class="p">.</span><span class="nx">set</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">proxySetter</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">[</span><span class="nx">sourceKey</span><span class="p">][</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">val</span>
+  <span class="p">}</span>
+  <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">sharedPropertyDefinition</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div> <p>这里比较好理解，通过proxy函数将data上面的数据代理到vm上，这样就可以用app.text代替app._data.text了。</p> <h2 id="observe">observe</h2> <p>接下来是<a href="https://github.com/vuejs/vue/blob/dev/src/core/observer/index.js#L106">observe</a>，这个函数定义在core文件下oberver的index.js文件中。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/**
+ * Attempt to create an observer instance for a value,
+ * returns the new observer if successfully observed,
+ * or the existing observer if the value already has one.
+ */</span>
+ <span class="cm">/*
+ 尝试创建一个Observer实例（__ob__），如果成功创建Observer实例则返回新的Observer实例，如果已有Observer实例则返回现有的Observer实例。
+ */</span>
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">observe</span> <span class="p">(</span><span class="nx">value</span><span class="err">:</span> <span class="nx">any</span><span class="p">,</span> <span class="nx">asRootData</span><span class="err">:</span> <span class="p">?</span><span class="kr">boolean</span><span class="p">):</span> <span class="nx">Observer</span> <span class="o">|</span> <span class="k">void</span> <span class="p">{</span>
+  <span class="cm">/*判断是否是一个对象*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+  <span class="kd">let</span> <span class="nx">ob</span><span class="err">:</span> <span class="nx">Observer</span> <span class="o">|</span> <span class="k">void</span>
+
+  <span class="cm">/*这里用__ob__这个属性来判断是否已经有Observer实例，如果没有Observer实例则会新建一个Observer实例并赋值给__ob__这个属性，如果已有Observer实例则直接返回该Observer实例*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">hasOwn</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="s1">'__ob__'</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">value</span><span class="p">.</span><span class="nx">__ob__</span> <span class="k">instanceof</span> <span class="nx">Observer</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">ob</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">__ob__</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span>
+
+    <span class="cm">/*这里的判断是为了确保value是单纯的对象，而不是函数或者是Regexp等情况。*/</span>
+    <span class="nx">observerState</span><span class="p">.</span><span class="nx">shouldConvert</span> <span class="o">&amp;&amp;</span>
+    <span class="o">!</span><span class="nx">isServerRendering</span><span class="p">()</span> <span class="o">&amp;&amp;</span>
+    <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">||</span> <span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="o">&amp;&amp;</span>
+    <span class="nb">Object</span><span class="p">.</span><span class="nx">isExtensible</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+    <span class="o">!</span><span class="nx">value</span><span class="p">.</span><span class="nx">_isVue</span>
+  <span class="p">)</span> <span class="p">{</span>
+    <span class="nx">ob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Observer</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">asRootData</span> <span class="o">&amp;&amp;</span> <span class="nx">ob</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*如果是根数据则计数，后面Observer中的observe的asRootData非true*/</span>
+    <span class="nx">ob</span><span class="p">.</span><span class="nx">vmCount</span><span class="o">++</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">ob</span>
+<span class="p">}</span>
+
+</code></pre></div> <p>Vue的响应式数据都会有一个__ob__的属性作为标记，里面存放了该属性的观察器，也就是Observer的实例，防止重复绑定。</p> <h2 id="observer">Observer</h2> <p>接下来看一下新建的<a href="https://github.com/vuejs/vue/blob/dev/src/core/observer/index.js#L34">Observer</a>。Observer的作用就是遍历对象的所有属性将其进行双向绑定。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/**
+ * Observer class that are attached to each observed
+ * object. Once attached, the observer converts target
+ * object's property keys into getter/setters that
+ * collect dependencies and dispatches updates.
+ */</span>
+<span class="kr">export</span> <span class="kr">class</span>  <span class="p">{</span>
+  <span class="nl">value</span><span class="p">:</span> <span class="nx">any</span><span class="p">;</span>
+  <span class="nl">dep</span><span class="p">:</span> <span class="nx">Dep</span><span class="p">;</span>
+  <span class="nl">vmCount</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span> <span class="c1">// number of vms that has this object as root $data</span>
+
+  <span class="nx">constructor</span> <span class="p">(</span><span class="nx">value</span><span class="err">:</span> <span class="nx">any</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">dep</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dep</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">vmCount</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="cm">/* 
+    将Observer实例绑定到data的__ob__属性上面去，之前说过observe的时候会先检测是否已经有__ob__对象存放Observer实例了，def方法定义可以参考https://github.com/vuejs/vue/blob/dev/src/core/util/lang.js#L16 
+    */</span>
+    <span class="nx">def</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="s1">'__ob__'</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+
+      <span class="cm">/*
+          如果是数组，将修改后可以截获响应的数组方法替换掉该数组的原型中的原生方法，达到监听数组数据变化响应的效果。
+          这里如果当前浏览器支持__proto__属性，则直接覆盖当前数组对象原型上的原生数组方法，如果不支持该属性，则直接覆盖数组对象的原型。
+      */</span>
+      <span class="kr">const</span> <span class="nx">augment</span> <span class="o">=</span> <span class="nx">hasProto</span>
+        <span class="p">?</span> <span class="nx">protoAugment</span>  <span class="cm">/*直接覆盖原型的方法来修改目标对象*/</span>
+        <span class="p">:</span> <span class="nx">copyAugment</span>   <span class="cm">/*定义（覆盖）目标对象或数组的某一个方法*/</span>
+      <span class="nx">augment</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">arrayMethods</span><span class="p">,</span> <span class="nx">arrayKeys</span><span class="p">)</span>
+
+      <span class="cm">/*如果是数组则需要遍历数组的每一个成员进行observe*/</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">observeArray</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+      <span class="cm">/*如果是对象则直接walk进行绑定*/</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">walk</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Walk through each property and convert them into
+   * getter/setters. This method should only be called when
+   * value type is Object.
+   */</span>
+  <span class="nx">walk</span> <span class="p">(</span><span class="nx">obj</span><span class="err">:</span> <span class="nb">Object</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">const</span> <span class="nx">keys</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span>
+
+    <span class="cm">/*walk方法会遍历对象的每一个属性进行defineReactive绑定*/</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">defineReactive</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]])</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Observe a list of Array items.
+   */</span>
+  <span class="nx">observeArray</span> <span class="p">(</span><span class="nx">items</span><span class="err">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">any</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*数组需要便利每一个成员进行observe*/</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">items</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">observe</span><span class="p">(</span><span class="nx">items</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <p>Observer为数据加上响应式属性进行双向绑定。如果是对象则进行深度遍历，为每一个子对象都绑定上方法，如果是数组则为每一个成员都绑定上方法。</p> <p>如果是修改一个数组的成员，该成员是一个对象，那只需要递归对数组的成员进行双向绑定即可。但这时候出现了一个问题，？如果我们进行pop、push等操作的时候，push进去的对象根本没有进行过双向绑定，更别说pop了，那么我们如何监听数组的这些变化呢？ Vue.js提供的方法是重写push、pop、shift、unshift、splice、sort、reverse这七个<a href="http://v1-cn.vuejs.org/guide/list.html#变异方法">数组方法</a>。修改数组原型方法的代码可以参考<a href="https://github.com/vuejs/vue/blob/dev/src/core/observer/array.js">observer/array.js</a>。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/*
+ * not type checking this file because flow doesn't play well with
+ * dynamically accessing methods on Array prototype
+ */</span>
+
+<span class="kr">import</span> <span class="p">{</span> <span class="nx">def</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">'../util/index'</span>
+
+<span class="cm">/*取得原生数组的原型*/</span>
+<span class="kr">const</span> <span class="nx">arrayProto</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span>
+<span class="cm">/*创建一个新的数组对象，修改该对象上的数组的七个方法，防止污染原生数组方法*/</span>
+<span class="kr">export</span> <span class="kr">const</span> <span class="nx">arrayMethods</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">arrayProto</span><span class="p">)</span>
+
+<span class="cm">/**
+ * Intercept mutating methods and emit events
+ */</span>
+ <span class="cm">/*这里重写了数组的这些方法，在保证不污染原生数组原型的情况下重写数组的这些方法，截获数组的成员发生的变化，执行原生数组操作的同时dep通知关联的所有观察者进行响应式处理*/</span>
+<span class="p">;[</span>
+  <span class="s1">'push'</span><span class="p">,</span>
+  <span class="s1">'pop'</span><span class="p">,</span>
+  <span class="s1">'shift'</span><span class="p">,</span>
+  <span class="s1">'unshift'</span><span class="p">,</span>
+  <span class="s1">'splice'</span><span class="p">,</span>
+  <span class="s1">'sort'</span><span class="p">,</span>
+  <span class="s1">'reverse'</span>
+<span class="p">]</span>
+<span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// cache original method</span>
+  <span class="cm">/*将数组的原生方法缓存起来，后面要调用*/</span>
+  <span class="kr">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">arrayProto</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span>
+  <span class="nx">def</span><span class="p">(</span><span class="nx">arrayMethods</span><span class="p">,</span> <span class="nx">method</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">mutator</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// avoid leaking arguments:</span>
+    <span class="c1">// http://jsperf.com/closure-with-arguments</span>
+    <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span>
+    <span class="kr">const</span> <span class="nx">args</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">args</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="cm">/*调用原生的数组方法*/</span>
+    <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">original</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">)</span>
+
+    <span class="cm">/*数组新插入的元素需要重新进行observe才能响应式*/</span>
+    <span class="kr">const</span> <span class="nx">ob</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">__ob__</span>
+    <span class="kd">let</span> <span class="nx">inserted</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="s1">'push'</span><span class="err">:</span>
+        <span class="nx">inserted</span> <span class="o">=</span> <span class="nx">args</span>
+        <span class="k">break</span>
+      <span class="k">case</span> <span class="s1">'unshift'</span><span class="err">:</span>
+        <span class="nx">inserted</span> <span class="o">=</span> <span class="nx">args</span>
+        <span class="k">break</span>
+      <span class="k">case</span> <span class="s1">'splice'</span><span class="err">:</span>
+        <span class="nx">inserted</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">break</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">inserted</span><span class="p">)</span> <span class="nx">ob</span><span class="p">.</span><span class="nx">observeArray</span><span class="p">(</span><span class="nx">inserted</span><span class="p">)</span>
+      
+    <span class="c1">// notify change</span>
+    <span class="cm">/*dep通知所有注册的观察者进行响应式处理*/</span>
+    <span class="nx">ob</span><span class="p">.</span><span class="nx">dep</span><span class="p">.</span><span class="nx">notify</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nx">result</span>
+  <span class="p">})</span>
+<span class="p">})</span>
+
+</code></pre></div> <p>从数组的原型新建一个Object.create(arrayProto)对象，通过修改此原型可以保证原生数组方法不被污染。如果当前浏览器支持__proto__这个属性的话就可以直接覆盖该属性则使数组对象具有了重写后的数组方法。如果没有该属性的浏览器，则必须通过遍历def所有需要重写的数组方法，这种方法效率较低，所以优先使用第一种。 在保证不污染不覆盖数组原生方法添加监听，主要做了两个操作，第一是通知所有注册的观察者进行响应式处理，第二是如果是添加成员的操作，需要对新成员进行observe。 但是修改了数组的原生方法以后我们还是没法像原生数组一样直接通过数组的下标或者设置length来修改数组，Vue.js提供了<a href="http://v1-cn.vuejs.org/guide/list.html#问题">$set()及$remove()方法</a>。</p> <h2 id="watcher">Watcher</h2> <p><a href="https://github.com/vuejs/vue/blob/dev/src/core/observer/watcher.js#L24">Watcher</a>是一个观察者对象。依赖收集以后Watcher对象会被保存在Deps中，数据变动的时候会由于Deps通知Watcher实例，然后由Watcher实例回调cb进行实图的更新。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kr">export</span> <span class="k">default</span> <span class="kr">class</span> <span class="nx">Watcher</span> <span class="p">{</span>
+  <span class="nl">vm</span><span class="p">:</span> <span class="nx">Component</span><span class="p">;</span>
+  <span class="nl">expression</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">cb</span><span class="p">:</span> <span class="nb">Function</span><span class="p">;</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">deep</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span>
+  <span class="nl">user</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span>
+  <span class="nl">lazy</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span>
+  <span class="nl">sync</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span>
+  <span class="nl">dirty</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span>
+  <span class="nl">active</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span>
+  <span class="nl">deps</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">Dep</span><span class="o">&gt;</span><span class="p">;</span>
+  <span class="nl">newDeps</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">Dep</span><span class="o">&gt;</span><span class="p">;</span>
+  <span class="nl">depIds</span><span class="p">:</span> <span class="nx">ISet</span><span class="p">;</span>
+  <span class="nl">newDepIds</span><span class="p">:</span> <span class="nx">ISet</span><span class="p">;</span>
+  <span class="nl">getter</span><span class="p">:</span> <span class="nb">Function</span><span class="p">;</span>
+  <span class="nl">value</span><span class="p">:</span> <span class="nx">any</span><span class="p">;</span>
+
+  <span class="nx">constructor</span> <span class="p">(</span>
+    <span class="nx">vm</span><span class="err">:</span> <span class="nx">Component</span><span class="p">,</span>
+    <span class="nx">expOrFn</span><span class="err">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="nb">Function</span><span class="p">,</span>
+    <span class="nx">cb</span><span class="err">:</span> <span class="nb">Function</span><span class="p">,</span>
+    <span class="nx">options</span><span class="p">?:</span> <span class="nb">Object</span>
+  <span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">vm</span> <span class="o">=</span> <span class="nx">vm</span>
+    <span class="cm">/*_watchers存放订阅者实例*/</span>
+    <span class="nx">vm</span><span class="p">.</span><span class="nx">_watchers</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+    <span class="c1">// options</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">deep</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">options</span><span class="p">.</span><span class="nx">deep</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">user</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">options</span><span class="p">.</span><span class="nx">user</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">lazy</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">options</span><span class="p">.</span><span class="nx">lazy</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">options</span><span class="p">.</span><span class="nx">sync</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">deep</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">user</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">lazy</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">cb</span> <span class="o">=</span> <span class="nx">cb</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="o">++</span><span class="nx">uid</span> <span class="c1">// uid for batching</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">active</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">dirty</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">lazy</span> <span class="c1">// for lazy watchers</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">deps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">newDeps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">depIds</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Set</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">newDepIds</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Set</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">expression</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span>
+      <span class="p">?</span> <span class="nx">expOrFn</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span>
+      <span class="p">:</span> <span class="s1">''</span>
+    <span class="c1">// parse expression for getter</span>
+    <span class="cm">/*把表达式expOrFn解析成getter*/</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">expOrFn</span> <span class="o">===</span> <span class="s1">'function'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">getter</span> <span class="o">=</span> <span class="nx">expOrFn</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">getter</span> <span class="o">=</span> <span class="nx">parsePath</span><span class="p">(</span><span class="nx">expOrFn</span><span class="p">)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">getter</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">getter</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{}</span>
+        <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span> <span class="nx">warn</span><span class="p">(</span>
+          <span class="err">`</span><span class="nx">Failed</span> <span class="nx">watching</span> <span class="na">path</span><span class="p">:</span> <span class="s2">"${expOrFn}"</span> <span class="err">`</span> <span class="o">+</span>
+          <span class="s1">'Watcher only accepts simple dot-delimited paths. '</span> <span class="o">+</span>
+          <span class="s1">'For full control, use a function instead.'</span><span class="p">,</span>
+          <span class="nx">vm</span>
+        <span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">lazy</span>
+      <span class="p">?</span> <span class="kc">undefined</span>
+      <span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">()</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Evaluate the getter, and re-collect dependencies.
+   */</span>
+   <span class="cm">/*获得getter的值并且重新进行依赖收集*/</span>
+  <span class="nx">get</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="cm">/*将自身watcher观察者实例设置给Dep.target，用以依赖收集。*/</span>
+    <span class="nx">pushTarget</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+    <span class="kd">let</span> <span class="nx">value</span>
+    <span class="kr">const</span> <span class="nx">vm</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">vm</span>
+
+    <span class="cm">/*
+      执行了getter操作，看似执行了渲染操作，其实是执行了依赖收集。
+      在将Dep.target设置为自生观察者实例以后，执行getter操作。
+      譬如说现在的的data中可能有a、b、c三个数据，getter渲染需要依赖a跟c，
+      那么在执行getter的时候就会触发a跟c两个数据的getter函数，
+      在getter函数中即可判断Dep.target是否存在然后完成依赖收集，
+      将该观察者对象放入闭包中的Dep的subs中去。
+    */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">try</span> <span class="p">{</span>
+        <span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">vm</span><span class="p">)</span>
+      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">handleError</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">vm</span><span class="p">,</span> <span class="err">`</span><span class="nx">getter</span> <span class="k">for</span> <span class="nx">watcher</span> <span class="s2">"${this.expression}"</span><span class="err">`</span><span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">vm</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="c1">// "touch" every property so they are all tracked as</span>
+    <span class="c1">// dependencies for deep watching</span>
+    <span class="cm">/*如果存在deep，则触发每个深层对象的依赖，追踪其变化*/</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">deep</span><span class="p">)</span> <span class="p">{</span>
+      <span class="cm">/*递归每一个对象或者数组，触发它们的getter，使得对象或数组的每一个成员都被依赖收集，形成一个“深（deep）”依赖关系*/</span>
+      <span class="nx">traverse</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="cm">/*将观察者实例从target栈中取出并设置给Dep.target*/</span>
+    <span class="nx">popTarget</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">cleanupDeps</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nx">value</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Add a dependency to this directive.
+   */</span>
+   <span class="cm">/*添加一个依赖关系到Deps集合中*/</span>
+  <span class="nx">addDep</span> <span class="p">(</span><span class="nx">dep</span><span class="err">:</span> <span class="nx">Dep</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">dep</span><span class="p">.</span><span class="nx">id</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">newDepIds</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">newDepIds</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">newDeps</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">dep</span><span class="p">)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">depIds</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">dep</span><span class="p">.</span><span class="nx">addSub</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Clean up for dependency collection.
+   */</span>
+   <span class="cm">/*清理依赖收集*/</span>
+  <span class="nx">cleanupDeps</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="cm">/*移除所有观察者对象*/</span>
+    <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">deps</span><span class="p">.</span><span class="nx">length</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kr">const</span> <span class="nx">dep</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">deps</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">newDepIds</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">dep</span><span class="p">.</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">dep</span><span class="p">.</span><span class="nx">removeSub</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="kd">let</span> <span class="nx">tmp</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">depIds</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">depIds</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">newDepIds</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">newDepIds</span> <span class="o">=</span> <span class="nx">tmp</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">newDepIds</span><span class="p">.</span><span class="nx">clear</span><span class="p">()</span>
+    <span class="nx">tmp</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">deps</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">deps</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">newDeps</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">newDeps</span> <span class="o">=</span> <span class="nx">tmp</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">newDeps</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Subscriber interface.
+   * Will be called when a dependency changes.
+   */</span>
+   <span class="cm">/*
+      调度者接口，当依赖发生改变的时候进行回调。
+   */</span>
+  <span class="nx">update</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="cm">/* istanbul ignore else */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">lazy</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">dirty</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sync</span><span class="p">)</span> <span class="p">{</span>
+      <span class="cm">/*同步则执行run直接渲染视图*/</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">run</span><span class="p">()</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="cm">/*异步推送到观察者队列中，由调度者调用。*/</span>
+      <span class="nx">queueWatcher</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Scheduler job interface.
+   * Will be called by the scheduler.
+   */</span>
+   <span class="cm">/*
+      调度者工作接口，将被调度者回调。
+    */</span>
+  <span class="nx">run</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">active</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kr">const</span> <span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">()</span>
+      <span class="k">if</span> <span class="p">(</span>
+        <span class="nx">value</span> <span class="o">!==</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">||</span>
+        <span class="c1">// Deep watchers and watchers on Object/Arrays should fire even</span>
+        <span class="c1">// when the value is the same, because the value may</span>
+        <span class="c1">// have mutated.</span>
+        <span class="cm">/*
+            即便值相同，拥有Deep属性的观察者以及在对象／数组上的观察者应该被触发更新，因为它们的值可能发生改变。
+        */</span>
+        <span class="nx">isObject</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">||</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">deep</span>
+      <span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// set new value</span>
+        <span class="kr">const</span> <span class="nx">oldValue</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span>
+        <span class="cm">/*设置新的值*/</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span>
+
+        <span class="cm">/*触发回调渲染视图*/</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">try</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">cb</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">oldValue</span><span class="p">)</span>
+          <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">handleError</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">vm</span><span class="p">,</span> <span class="err">`</span><span class="nx">callback</span> <span class="k">for</span> <span class="nx">watcher</span> <span class="s2">"${this.expression}"</span><span class="err">`</span><span class="p">)</span>
+          <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">cb</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">oldValue</span><span class="p">)</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Evaluate the value of the watcher.
+   * This only gets called for lazy watchers.
+   */</span>
+   <span class="cm">/*获取观察者的值*/</span>
+  <span class="nx">evaluate</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">dirty</span> <span class="o">=</span> <span class="kc">false</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Depend on all deps collected by this watcher.
+   */</span>
+   <span class="cm">/*收集该watcher的所有deps依赖*/</span>
+  <span class="nx">depend</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">deps</span><span class="p">.</span><span class="nx">length</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">deps</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">depend</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Remove self from all dependencies' subscriber list.
+   */</span>
+   <span class="cm">/*将自身从所有依赖收集订阅列表删除*/</span>
+  <span class="nx">teardown</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">active</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// remove self from vm's watcher list</span>
+      <span class="c1">// this is a somewhat expensive operation so we skip it</span>
+      <span class="c1">// if the vm is being destroyed.</span>
+      <span class="cm">/*从vm实例的观察者列表中将自身移除，由于该操作比较耗费资源，所以如果vm实例正在被销毁则跳过该步骤。*/</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">vm</span><span class="p">.</span><span class="nx">_isBeingDestroyed</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">remove</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">vm</span><span class="p">.</span><span class="nx">_watchers</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
+      <span class="p">}</span>
+      <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">deps</span><span class="p">.</span><span class="nx">length</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">deps</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">removeSub</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+      <span class="p">}</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">active</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <h2 id="dep">Dep</h2> <p>来看看<a href="https://github.com/vuejs/vue/blob/dev/src/core/observer/dep.js#L12">Dep</a>类。其实Dep就是一个发布者，可以订阅多个观察者，依赖收集之后Deps中会存在一个或多个Watcher对象，在数据变更的时候通知所有的Watcher。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/**
+ * A dep is an observable that can have multiple
+ * directives subscribing to it.
+ */</span>
+<span class="kr">export</span> <span class="k">default</span> <span class="kr">class</span> <span class="nx">Dep</span> <span class="p">{</span>
+  <span class="kr">static</span> <span class="nx">target</span><span class="err">:</span> <span class="p">?</span><span class="nx">Watcher</span><span class="p">;</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span>
+  <span class="nl">subs</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">Watcher</span><span class="o">&gt;</span><span class="p">;</span>
+
+  <span class="nx">constructor</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">uid</span><span class="o">++</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">subs</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*添加一个观察者对象*/</span>
+  <span class="nx">addSub</span> <span class="p">(</span><span class="nx">sub</span><span class="p">:</span> <span class="nx">Watcher</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">subs</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sub</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*移除一个观察者对象*/</span>
+  <span class="nx">removeSub</span> <span class="p">(</span><span class="nx">sub</span><span class="err">:</span> <span class="nx">Watcher</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">remove</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">subs</span><span class="p">,</span> <span class="nx">sub</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*依赖收集，当存在Dep.target的时候添加观察者对象*/</span>
+  <span class="nx">depend</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">Dep</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">Dep</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">addDep</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*通知所有订阅者*/</span>
+  <span class="nx">notify</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// stabilize the subscriber list first</span>
+    <span class="kr">const</span> <span class="nx">subs</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">subs</span><span class="p">.</span><span class="nx">slice</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">subs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">subs</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">update</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// the current target watcher being evaluated.</span>
+<span class="c1">// this is globally unique because there could be only one</span>
+<span class="c1">// watcher being evaluated at any time.</span>
+<span class="nx">Dep</span><span class="p">.</span><span class="nx">target</span> <span class="o">=</span> <span class="kc">null</span>
+<span class="cm">/*依赖收集完需要将Dep.target设为null，防止后面重复添加依赖。*/</span>
+</code></pre></div> <h2 id="definereactive">defineReactive</h2> <p>接下来是<a href="https://github.com/vuejs/vue/blob/dev/src/core/observer/index.js#L131">defineReactive</a>。defineReactive的作用是通过Object.defineProperty为数据定义上getter\setter方法，进行依赖收集后闭包中的Deps会存放Watcher对象。触发setter改变数据的时候会通知Deps订阅者通知所有的Watcher观察者对象进行试图的更新。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/**
+ * Define a reactive property on an Object.
+ */</span>
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">defineReactive</span> <span class="p">(</span>
+  <span class="nx">obj</span><span class="err">:</span> <span class="nb">Object</span><span class="p">,</span>
+  <span class="nx">key</span><span class="err">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">val</span><span class="err">:</span> <span class="nx">any</span><span class="p">,</span>
+  <span class="nx">customSetter</span><span class="p">?:</span> <span class="nb">Function</span>
+<span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/*在闭包中定义一个dep对象*/</span>
+  <span class="kr">const</span> <span class="nx">dep</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dep</span><span class="p">()</span>
+
+  <span class="kr">const</span> <span class="nx">property</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getOwnPropertyDescriptor</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="p">.</span><span class="nx">configurable</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+
+  <span class="cm">/*如果之前该对象已经预设了getter以及setter函数则将其取出来，新定义的getter/setter中会将其执行，保证不会覆盖之前已经定义的getter/setter。*/</span>
+  <span class="c1">// cater for pre-defined getter/setters</span>
+  <span class="kr">const</span> <span class="nx">getter</span> <span class="o">=</span> <span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="p">.</span><span class="nx">get</span>
+  <span class="kr">const</span> <span class="nx">setter</span> <span class="o">=</span> <span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="p">.</span><span class="nx">set</span>
+
+  <span class="cm">/*对象的子对象递归进行observe并返回子节点的Observer对象*/</span>
+  <span class="kd">let</span> <span class="nx">childOb</span> <span class="o">=</span> <span class="nx">observe</span><span class="p">(</span><span class="nx">val</span><span class="p">)</span>
+  <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">enumerable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">configurable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">get</span><span class="p">:</span> <span class="kd">function</span> <span class="nx">reactiveGetter</span> <span class="p">()</span> <span class="p">{</span>
+
+      <span class="cm">/*如果原本对象拥有getter方法则执行*/</span>
+      <span class="kr">const</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">getter</span> <span class="p">?</span> <span class="nx">getter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">:</span> <span class="nx">val</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">Dep</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="cm">/*进行依赖收集*/</span>
+        <span class="nx">dep</span><span class="p">.</span><span class="nx">depend</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">childOb</span><span class="p">)</span> <span class="p">{</span>
+
+          <span class="cm">/*子对象进行依赖收集，其实就是将同一个watcher观察者实例放进了两个depend中，一个是正在本身闭包中的depend，另一个是子元素的depend*/</span>
+          <span class="nx">childOb</span><span class="p">.</span><span class="nx">dep</span><span class="p">.</span><span class="nx">depend</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+
+          <span class="cm">/*是数组则需要对每一个成员都进行依赖收集，如果数组的成员还是数组，则递归。*/</span>
+          <span class="nx">dependArray</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">value</span>
+    <span class="p">},</span>
+    <span class="nx">set</span><span class="err">:</span> <span class="kd">function</span> <span class="nx">reactiveSetter</span> <span class="p">(</span><span class="nx">newVal</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="cm">/*通过getter方法获取当前值，与新值进行比较，一致则不需要执行下面的操作*/</span>
+      <span class="kr">const</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">getter</span> <span class="p">?</span> <span class="nx">getter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">:</span> <span class="nx">val</span>
+      <span class="cm">/* eslint-disable no-self-compare */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">newVal</span> <span class="o">===</span> <span class="nx">value</span> <span class="o">||</span> <span class="p">(</span><span class="nx">newVal</span> <span class="o">!==</span> <span class="nx">newVal</span> <span class="o">&amp;&amp;</span> <span class="nx">value</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span>
+      <span class="p">}</span>
+      <span class="cm">/* eslint-enable no-self-compare */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span> <span class="nx">customSetter</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">customSetter</span><span class="p">()</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">setter</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="cm">/*如果原本对象拥有setter方法则执行setter*/</span>
+        <span class="nx">setter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">)</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">val</span> <span class="o">=</span> <span class="nx">newVal</span>
+      <span class="p">}</span>
+
+      <span class="cm">/*新的值需要重新进行observe，保证数据响应式*/</span>
+      <span class="nx">childOb</span> <span class="o">=</span> <span class="nx">observe</span><span class="p">(</span><span class="nx">newVal</span><span class="p">)</span>
+
+      <span class="cm">/*dep对象通知所有的观察者*/</span>
+      <span class="nx">dep</span><span class="p">.</span><span class="nx">notify</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div> <p>现在再来看这张图是不是更清晰了呢？</p> <p><img src="https://cn.vuejs.org/images/data.png" alt="img" /></p> <h2 id="section-1">最后</h2> <p>感谢阅读，希望能对你有所帮助。</p> <p>原文地址：<a href="https://github.com/answershuto/learnVue">https://github.com/answershuto/learnVue</a></p> <p>作者： 染陌</p> <p>Email： answershuto@gmail.com</p> <p>微信： answershuto</p> <p>欢迎交流学习，共同学习，共同进步。</p> </div> </article> <footer class="site-footer"> <div class="container"> <ul class="social"> <li><a href="http://github.com/answershuto" target="_blank"><i class="icon icon-github"></i></a></li> </ul> <p> <br><small>&copy;2017 CaoYang , All rights reserved.</small> </p> </div> </footer> </main> <script src="/assets/js/jquery-2.1.1.js"></script> <script src="/assets/js/main.js"></script> </body> </html><!-- by nandomoreira.me -->

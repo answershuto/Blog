@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "依赖收集"
+title:  "Vue.js依赖收集"
 date:   2017-06-25 12:46:00 +0800
 tags: [Vue.js] 
 excerpt: Vue.js依赖收集
