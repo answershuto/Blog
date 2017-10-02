@@ -1,0 +1,600 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>从template到DOM</title> <meta name="description" content="Vue.js源码角度看内部运行机制"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/jekyll/update/2017/10/02/%E4%BB%8Etemplate%E5%88%B0DOM(Vue.js%E6%BA%90%E7%A0%81%E8%A7%92%E5%BA%A6%E7%9C%8B%E5%86%85%E9%83%A8%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6).html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">从template到DOM</h1> <p class="post-meta"><time datetime="2017-10-02T09:10:00+08:00" itemprop="datePublished">Oct 2, 2017</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <h2 id="newvue">从new一个Vue对象开始</h2> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">vm</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+    <span class="na">el</span><span class="p">:</span> <span class="s1">'#app'</span><span class="p">,</span>
+    <span class="cm">/*some options*/</span>
+<span class="p">});</span>
+</code></pre></div> <p>很多同学好奇，在new一个Vue对象的时候，内部究竟发生了什么？</p> <p>究竟Vue.js是如何将data中的数据渲染到真实的宿主环境环境中的？</p> <p>又是如何通过“响应式”修改数据的？</p> <p>template是如何被编译成真实环境中可用的HTML的？</p> <p>Vue指令又是执行的？</p> <p>带着这些疑问，我们从Vue的构造类开始看起。</p> <h2 id="vue">Vue构造类</h2> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">Vue</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span>
+    <span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">Vue</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">warn</span><span class="p">(</span><span class="s1">'Vue is a constructor and should be called with the `new` keyword'</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="cm">/*初始化*/</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">_init</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div> <p>Vue的构造类只做了一件事情，就是调用_init函数进行</p> <p>来看一下init的代码</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nx">Vue</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">_init</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">?:</span> <span class="nb">Object</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">const</span> <span class="nx">vm</span><span class="err">:</span> <span class="nx">Component</span> <span class="o">=</span> <span class="k">this</span>
+    <span class="c1">// a uid</span>
+    <span class="nx">vm</span><span class="p">.</span><span class="nx">_uid</span> <span class="o">=</span> <span class="nx">uid</span><span class="o">++</span>
+
+    <span class="kd">let</span> <span class="nx">startTag</span><span class="p">,</span> <span class="nx">endTag</span>
+    <span class="cm">/* istanbul ignore if */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">performance</span> <span class="o">&amp;&amp;</span> <span class="nx">mark</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">startTag</span> <span class="o">=</span> <span class="err">`</span><span class="nx">vue</span><span class="o">-</span><span class="nx">perf</span><span class="o">-</span><span class="nx">init</span><span class="err">:</span><span class="nx">$</span><span class="p">{</span><span class="nx">vm</span><span class="p">.</span><span class="nx">_uid</span><span class="p">}</span><span class="err">`</span>
+      <span class="nx">endTag</span> <span class="o">=</span> <span class="err">`</span><span class="nx">vue</span><span class="o">-</span><span class="nx">perf</span><span class="o">-</span><span class="nx">end</span><span class="err">:</span><span class="nx">$</span><span class="p">{</span><span class="nx">vm</span><span class="p">.</span><span class="nx">_uid</span><span class="p">}</span><span class="err">`</span>
+      <span class="nx">mark</span><span class="p">(</span><span class="nx">startTag</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1">// a flag to avoid this being observed</span>
+    <span class="cm">/*一个防止vm实例自身被观察的标志位*/</span>
+    <span class="nx">vm</span><span class="p">.</span><span class="nx">_isVue</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="c1">// merge options</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">options</span> <span class="o">&amp;&amp;</span> <span class="nx">options</span><span class="p">.</span><span class="nx">_isComponent</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// optimize internal component instantiation</span>
+      <span class="c1">// since dynamic options merging is pretty slow, and none of the</span>
+      <span class="c1">// internal component options needs special treatment.</span>
+      <span class="nx">initInternalComponent</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">vm</span><span class="p">.</span><span class="nx">$options</span> <span class="o">=</span> <span class="nx">mergeOptions</span><span class="p">(</span>
+        <span class="nx">resolveConstructorOptions</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">constructor</span><span class="p">),</span>
+        <span class="nx">options</span> <span class="o">||</span> <span class="p">{},</span>
+        <span class="nx">vm</span>
+      <span class="p">)</span>
+    <span class="p">}</span>
+    <span class="cm">/* istanbul ignore else */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">initProxy</span><span class="p">(</span><span class="nx">vm</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">vm</span><span class="p">.</span><span class="nx">_renderProxy</span> <span class="o">=</span> <span class="nx">vm</span>
+    <span class="p">}</span>
+    <span class="c1">// expose real self</span>
+    <span class="nx">vm</span><span class="p">.</span><span class="nx">_self</span> <span class="o">=</span> <span class="nx">vm</span>
+    <span class="cm">/*初始化生命周期*/</span>
+    <span class="nx">initLifecycle</span><span class="p">(</span><span class="nx">vm</span><span class="p">)</span>
+    <span class="cm">/*初始化事件*/</span>
+    <span class="nx">initEvents</span><span class="p">(</span><span class="nx">vm</span><span class="p">)</span>
+    <span class="cm">/*初始化render*/</span>
+    <span class="nx">initRender</span><span class="p">(</span><span class="nx">vm</span><span class="p">)</span>
+    <span class="cm">/*调用beforeCreate钩子函数并且触发beforeCreate钩子事件*/</span>
+    <span class="nx">callHook</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="s1">'beforeCreate'</span><span class="p">)</span>
+    <span class="nx">initInjections</span><span class="p">(</span><span class="nx">vm</span><span class="p">)</span> <span class="c1">// resolve injections before data/props</span>
+    <span class="cm">/*初始化props、methods、data、computed与watch*/</span>
+    <span class="nx">initState</span><span class="p">(</span><span class="nx">vm</span><span class="p">)</span>
+    <span class="nx">initProvide</span><span class="p">(</span><span class="nx">vm</span><span class="p">)</span> <span class="c1">// resolve provide after data/props</span>
+    <span class="cm">/*调用created钩子函数并且触发created钩子事件*/</span>
+    <span class="nx">callHook</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="s1">'created'</span><span class="p">)</span>
+
+    <span class="cm">/* istanbul ignore if */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">performance</span> <span class="o">&amp;&amp;</span> <span class="nx">mark</span><span class="p">)</span> <span class="p">{</span>
+      <span class="cm">/*格式化组件名*/</span>
+      <span class="nx">vm</span><span class="p">.</span><span class="nx">_name</span> <span class="o">=</span> <span class="nx">formatComponentName</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+      <span class="nx">mark</span><span class="p">(</span><span class="nx">endTag</span><span class="p">)</span>
+      <span class="nx">measure</span><span class="p">(</span><span class="err">`</span><span class="nx">$</span><span class="p">{</span><span class="nx">vm</span><span class="p">.</span><span class="nx">_name</span><span class="p">}</span> <span class="nx">init</span><span class="err">`</span><span class="p">,</span> <span class="nx">startTag</span><span class="p">,</span> <span class="nx">endTag</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">$options</span><span class="p">.</span><span class="nx">el</span><span class="p">)</span> <span class="p">{</span>
+      <span class="cm">/*挂载组件*/</span>
+      <span class="nx">vm</span><span class="p">.</span><span class="nx">$mount</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">$options</span><span class="p">.</span><span class="nx">el</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre></div> <p>_init主要做了这两件事：</p> <p>1.初始化（包括生命周期、事件、render函数、state等）。</p> <p>2.$mount组件。</p> <p>在生命钩子beforeCreate与created之间会初始化state，在此过程中，会依次初始化props、methods、data、computed与watch，这也就是Vue.js对options中的数据进行“响应式化”（即双向绑定）的过程。对于Vue.js响应式原理不了解的同学可以先看一下笔者的另一片文章<a href="https://github.com/answershuto/learnVue/blob/master/docs/%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86.MarkDown">《Vue.js响应式原理》</a>。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/*初始化props、methods、data、computed与watch*/</span>
+<span class="kr">export</span> <span class="kd">function</span> <span class="nx">initState</span> <span class="p">(</span><span class="nx">vm</span><span class="err">:</span> <span class="nx">Component</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">vm</span><span class="p">.</span><span class="nx">_watchers</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="kr">const</span> <span class="nx">opts</span> <span class="o">=</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">$options</span>
+  <span class="cm">/*初始化props*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">props</span><span class="p">)</span> <span class="nx">initProps</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">props</span><span class="p">)</span>
+  <span class="cm">/*初始化方法*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">methods</span><span class="p">)</span> <span class="nx">initMethods</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">methods</span><span class="p">)</span>
+  <span class="cm">/*初始化data*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">initData</span><span class="p">(</span><span class="nx">vm</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="cm">/*该组件没有data的时候绑定一个空对象*/</span>
+    <span class="nx">observe</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">_data</span> <span class="o">=</span> <span class="p">{},</span> <span class="kc">true</span> <span class="cm">/* asRootData */</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="cm">/*初始化computed*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">computed</span><span class="p">)</span> <span class="nx">initComputed</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">computed</span><span class="p">)</span>
+  <span class="cm">/*初始化watchers*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">watch</span><span class="p">)</span> <span class="nx">initWatch</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">watch</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre></div> <h2 id="section">双向绑定</h2> <p>以initData为例，对option的data的数据进行双向绑定Oberver，其他option参数双向绑定的核心原理是一致的。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">initData</span> <span class="p">(</span><span class="nx">vm</span><span class="err">:</span> <span class="nx">Component</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="cm">/*得到data数据*/</span>
+  <span class="kd">let</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">$options</span><span class="p">.</span><span class="nx">data</span>
+  <span class="nx">data</span> <span class="o">=</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">_data</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">data</span> <span class="o">===</span> <span class="s1">'function'</span>
+    <span class="p">?</span> <span class="nx">getData</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">vm</span><span class="p">)</span>
+    <span class="p">:</span> <span class="nx">data</span> <span class="o">||</span> <span class="p">{}</span>
+
+  <span class="cm">/*判断是否是对象*/</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isPlainObject</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span> <span class="nx">warn</span><span class="p">(</span>
+      <span class="s1">'data functions should return an object:\n'</span> <span class="o">+</span>
+      <span class="s1">'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function'</span><span class="p">,</span>
+      <span class="nx">vm</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="c1">// proxy data on instance</span>
+  <span class="cm">/*遍历data对象*/</span>
+  <span class="kr">const</span> <span class="nx">keys</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+  <span class="kr">const</span> <span class="nx">props</span> <span class="o">=</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">$options</span><span class="p">.</span><span class="nx">props</span>
+  <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">length</span>
+
+  <span class="c1">//遍历data中的数据</span>
+  <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/*保证data中的key不与props中的key重复，props优先，如果有冲突会产生warning*/</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">props</span> <span class="o">&amp;&amp;</span> <span class="nx">hasOwn</span><span class="p">(</span><span class="nx">props</span><span class="p">,</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+      <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="s1">'production'</span> <span class="o">&amp;&amp;</span> <span class="nx">warn</span><span class="p">(</span>
+        <span class="err">`</span><span class="nx">The</span> <span class="nx">data</span> <span class="nx">property</span> <span class="s2">"${keys[i]}"</span> <span class="nx">is</span> <span class="nx">already</span> <span class="nx">declared</span> <span class="nx">as</span> <span class="nx">a</span> <span class="nx">prop</span><span class="p">.</span> <span class="err">`</span> <span class="o">+</span>
+        <span class="err">`</span><span class="nx">Use</span> <span class="nx">prop</span> <span class="k">default</span> <span class="nx">value</span> <span class="nx">instead</span><span class="p">.</span><span class="err">`</span><span class="p">,</span>
+        <span class="nx">vm</span>
+      <span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isReserved</span><span class="p">(</span><span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+      <span class="cm">/*判断是否是保留字段*/</span>
+
+      <span class="cm">/*这里是我们前面讲过的代理，将data上面的属性代理到了vm实例上*/</span>
+      <span class="nx">proxy</span><span class="p">(</span><span class="nx">vm</span><span class="p">,</span> <span class="err">`</span><span class="nx">_data</span><span class="err">`</span><span class="p">,</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="cm">/*Github:https://github.com/answershuto*/</span>
+  <span class="c1">// observe data</span>
+  <span class="cm">/*从这里开始我们要observe了，开始对数据进行绑定，这里有尤大大的注释asRootData，这步作为根数据，下面会进行递归observe进行对深层对象的绑定。*/</span>
+  <span class="nx">observe</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kc">true</span> <span class="cm">/* asRootData */</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div> <p>observe会通过defineReactive对data中的对象进行双向绑定，最终通过Object.defineProperty对对象设置setter以及getter的方法。getter的方法主要用来进行依赖收集，对于依赖收集不了解的同学可以参考笔者的另一篇文章<a href="https://github.com/answershuto/learnVue/blob/master/docs/%E4%BE%9D%E8%B5%96%E6%94%B6%E9%9B%86.MarkDown">《依赖收集》</a>。setter方法会在对象被修改的时候触发（不存在添加属性的情况，添加属性请用Vue.set），这时候setter会通知闭包中的Dep，Dep中有一些订阅了这个对象改变的Watcher观察者对象，Dep会通知Watcher对象更新视图。</p> <p>如果是修改一个数组的成员，该成员是一个对象，那只需要递归对数组的成员进行双向绑定即可。但这时候出现了一个问题，？如果我们进行pop、push等操作的时候，push进去的对象根本没有进行过双向绑定，更别说pop了，那么我们如何监听数组的这些变化呢？ Vue.js提供的方法是重写push、pop、shift、unshift、splice、sort、reverse这七个<a href="http://v1-cn.vuejs.org/guide/list.html#变异方法">数组方法</a>。修改数组原型方法的代码可以参考<a href="https://github.com/vuejs/vue/blob/dev/src/core/observer/array.js">observer/array.js</a>以及<a href="https://github.com/vuejs/vue/blob/dev/src/core/observer/index.js#L45">observer/index.js</a>。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kr">export</span> <span class="kr">class</span> <span class="nx">Observer</span> <span class="p">{</span>
+  <span class="nl">value</span><span class="p">:</span> <span class="nx">any</span><span class="p">;</span>
+  <span class="nl">dep</span><span class="p">:</span> <span class="nx">Dep</span><span class="p">;</span>
+  <span class="nl">vmCount</span><span class="p">:</span> <span class="nx">number</span><span class="p">;</span> <span class="c1">// number of vms that has this object as root $data</span>
+
+  <span class="nx">constructor</span> <span class="p">(</span><span class="nx">value</span><span class="err">:</span> <span class="nx">any</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//.......</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+      <span class="cm">/*
+          如果是数组，将修改后可以截获响应的数组方法替换掉该数组的原型中的原生方法，达到监听数组数据变化响应的效果。
+          这里如果当前浏览器支持__proto__属性，则直接覆盖当前数组对象原型上的原生数组方法，如果不支持该属性，则直接覆盖数组对象的原型。
+      */</span>
+      <span class="kr">const</span> <span class="nx">augment</span> <span class="o">=</span> <span class="nx">hasProto</span>
+        <span class="p">?</span> <span class="nx">protoAugment</span>  <span class="cm">/*直接覆盖原型的方法来修改目标对象*/</span>
+        <span class="p">:</span> <span class="nx">copyAugment</span>   <span class="cm">/*定义（覆盖）目标对象或数组的某一个方法*/</span>
+      <span class="nx">augment</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">arrayMethods</span><span class="p">,</span> <span class="nx">arrayKeys</span><span class="p">)</span>
+
+      <span class="cm">/*如果是数组则需要遍历数组的每一个成员进行observe*/</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">observeArray</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="cm">/*如果是对象则直接walk进行绑定*/</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">walk</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * Augment an target Object or Array by intercepting
+ * the prototype chain using __proto__
+ */</span>
+ <span class="cm">/*直接覆盖原型的方法来修改目标对象或数组*/</span>
+<span class="kd">function</span> <span class="nx">protoAugment</span> <span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">src</span><span class="err">:</span> <span class="nb">Object</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/* eslint-disable no-proto */</span>
+  <span class="nx">target</span><span class="p">.</span><span class="nx">__proto__</span> <span class="o">=</span> <span class="nx">src</span>
+  <span class="cm">/* eslint-enable no-proto */</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * Augment an target Object or Array by defining
+ * hidden properties.
+ */</span>
+<span class="cm">/* istanbul ignore next */</span>
+<span class="cm">/*定义（覆盖）目标对象或数组的某一个方法*/</span>
+<span class="kd">function</span> <span class="nx">copyAugment</span> <span class="p">(</span><span class="nx">target</span><span class="err">:</span> <span class="nb">Object</span><span class="p">,</span> <span class="nx">src</span><span class="err">:</span> <span class="nb">Object</span><span class="p">,</span> <span class="nx">keys</span><span class="err">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">const</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+    <span class="nx">def</span><span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">src</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/*
+ * not type checking this file because flow doesn't play well with
+ * dynamically accessing methods on Array prototype
+ */</span>
+
+<span class="kr">import</span> <span class="p">{</span> <span class="nx">def</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">'../util/index'</span>
+
+<span class="cm">/*取得原生数组的原型*/</span>
+<span class="kr">const</span> <span class="nx">arrayProto</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span>
+<span class="cm">/*创建一个新的数组对象，修改该对象上的数组的七个方法，防止污染原生数组方法*/</span>
+<span class="kr">export</span> <span class="kr">const</span> <span class="nx">arrayMethods</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">arrayProto</span><span class="p">)</span>
+
+<span class="cm">/**
+ * Intercept mutating methods and emit events
+ */</span>
+ <span class="cm">/*这里重写了数组的这些方法，在保证不污染原生数组原型的情况下重写数组的这些方法，截获数组的成员发生的变化，执行原生数组操作的同时dep通知关联的所有观察者进行响应式处理*/</span>
+<span class="p">;[</span>
+  <span class="s1">'push'</span><span class="p">,</span>
+  <span class="s1">'pop'</span><span class="p">,</span>
+  <span class="s1">'shift'</span><span class="p">,</span>
+  <span class="s1">'unshift'</span><span class="p">,</span>
+  <span class="s1">'splice'</span><span class="p">,</span>
+  <span class="s1">'sort'</span><span class="p">,</span>
+  <span class="s1">'reverse'</span>
+<span class="p">]</span>
+<span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// cache original method</span>
+  <span class="cm">/*将数组的原生方法缓存起来，后面要调用*/</span>
+  <span class="kr">const</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">arrayProto</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span>
+  <span class="nx">def</span><span class="p">(</span><span class="nx">arrayMethods</span><span class="p">,</span> <span class="nx">method</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">mutator</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// avoid leaking arguments:</span>
+    <span class="c1">// http://jsperf.com/closure-with-arguments</span>
+    <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span>
+    <span class="kr">const</span> <span class="nx">args</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">args</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="cm">/*调用原生的数组方法*/</span>
+    <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">original</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">)</span>
+
+    <span class="cm">/*数组新插入的元素需要重新进行observe才能响应式*/</span>
+    <span class="kr">const</span> <span class="nx">ob</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">__ob__</span>
+    <span class="kd">let</span> <span class="nx">inserted</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="s1">'push'</span><span class="err">:</span>
+        <span class="nx">inserted</span> <span class="o">=</span> <span class="nx">args</span>
+        <span class="k">break</span>
+      <span class="k">case</span> <span class="s1">'unshift'</span><span class="err">:</span>
+        <span class="nx">inserted</span> <span class="o">=</span> <span class="nx">args</span>
+        <span class="k">break</span>
+      <span class="k">case</span> <span class="s1">'splice'</span><span class="err">:</span>
+        <span class="nx">inserted</span> <span class="o">=</span> <span class="nx">args</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">break</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">inserted</span><span class="p">)</span> <span class="nx">ob</span><span class="p">.</span><span class="nx">observeArray</span><span class="p">(</span><span class="nx">inserted</span><span class="p">)</span>
+      
+    <span class="c1">// notify change</span>
+    <span class="cm">/*dep通知所有注册的观察者进行响应式处理*/</span>
+    <span class="nx">ob</span><span class="p">.</span><span class="nx">dep</span><span class="p">.</span><span class="nx">notify</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nx">result</span>
+  <span class="p">})</span>
+<span class="p">})</span>
+
+</code></pre></div> <p>从数组的原型新建一个Object.create(arrayProto)对象，通过修改此原型可以保证原生数组方法不被污染。如果当前浏览器支持__proto__这个属性的话就可以直接覆盖该属性则使数组对象具有了重写后的数组方法。如果没有该属性的浏览器，则必须通过遍历def所有需要重写的数组方法，这种方法效率较低，所以优先使用第一种。</p> <p>在保证不污染不覆盖数组原生方法添加监听，主要做了两个操作，第一是通知所有注册的观察者进行响应式处理，第二是如果是添加成员的操作，需要对新成员进行observe。</p> <p>但是修改了数组的原生方法以后我们还是没法像原生数组一样直接通过数组的下标或者设置length来修改数组，Vue.js提供了<a href="http://v1-cn.vuejs.org/guide/list.html#问题">$set()及$remove()方法</a>。</p> <p>对于更具体的讲解数据双向绑定以及Dep、Watcher的实现可以参考笔者的文章<a href="https://github.com/answershuto/learnVue/blob/master/docs/%E4%BB%8E%E6%BA%90%E7%A0%81%E8%A7%92%E5%BA%A6%E5%86%8D%E7%9C%8B%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A.MarkDown">《从源码角度再看数据绑定》</a>。</p> <h2 id="template">template编译</h2> <p>在$mount过程中，如果是独立构建构建，则会在此过程中将template编译成render function。当然，你也可以采用运行时构建。具体参考<a href="https://cn.vuejs.org/v2/guide/installation.html#运行时-编译器-vs-只包含运行时">运行时-编译器-vs-只包含运行时</a>。</p> <p>template是如何被编译成render function的呢？</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">baseCompile</span> <span class="p">(</span>
+  <span class="nx">template</span><span class="err">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">options</span><span class="err">:</span> <span class="nx">CompilerOptions</span>
+<span class="p">)</span><span class="err">:</span> <span class="nx">CompiledResult</span> <span class="p">{</span>
+  <span class="cm">/*parse解析得到ast树*/</span>
+  <span class="kr">const</span> <span class="nx">ast</span> <span class="o">=</span> <span class="nx">parse</span><span class="p">(</span><span class="nx">template</span><span class="p">.</span><span class="nx">trim</span><span class="p">(),</span> <span class="nx">options</span><span class="p">)</span>
+  <span class="cm">/*
+    将AST树进行优化
+    优化的目标：生成模板AST树，检测不需要进行DOM改变的静态子树。
+    一旦检测到这些静态树，我们就能做以下这些事情：
+    1.把它们变成常数，这样我们就再也不需要每次重新渲染时创建新的节点了。
+    2.在patch的过程中直接跳过。
+ */</span>
+  <span class="nx">optimize</span><span class="p">(</span><span class="nx">ast</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+  <span class="cm">/*根据ast树生成所需的code（内部包含render与staticRenderFns）*/</span>
+  <span class="kr">const</span> <span class="nx">code</span> <span class="o">=</span> <span class="nx">generate</span><span class="p">(</span><span class="nx">ast</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">ast</span><span class="p">,</span>
+    <span class="na">render</span><span class="p">:</span> <span class="nx">code</span><span class="p">.</span><span class="nx">render</span><span class="p">,</span>
+    <span class="na">staticRenderFns</span><span class="p">:</span> <span class="nx">code</span><span class="p">.</span><span class="nx">staticRenderFns</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <p>baseCompile首先会将模板template进行parse得到一个AST语法树，再通过optimize做一些优化，最后通过generate得到render以及staticRenderFns。</p> <h3 id="parse">parse</h3> <p>parse的源码可以参见<a href="https://github.com/answershuto/learnVue/blob/master/vue-src/compiler/parser/index.js#L53">https://github.com/answershuto/learnVue/blob/master/vue-src/compiler/parser/index.js#L53</a>。</p> <p>parse会用正则等方式解析template模板中的指令、class、style等数据，形成AST语法树。</p> <h3 id="optimize">optimize</h3> <p>optimize的主要作用是标记static静态节点，这是Vue在编译过程中的一处优化，后面当update更新界面时，会有一个patch的过程，diff算法会直接跳过静态节点，从而减少了比较的过程，优化了patch的性能。</p> <h3 id="generate">generate</h3> <p>generate是将AST语法树转化成render funtion字符串的过程，得到结果是render的字符串以及staticRenderFns字符串。</p> <p>具体的template编译实现请参考<a href="https://github.com/answershuto/learnVue/blob/master/docs/%E8%81%8A%E8%81%8AVue%E7%9A%84template%E7%BC%96%E8%AF%91.MarkDown">《聊聊Vue.js的template编译》</a>。</p> <h2 id="watcher">Watcher到视图</h2> <p>Watcher对象会通过调用updateComponent方法来达到更新视图的目的。这里提一下，其实Watcher并不是实时更新视图的，Vue.js默认会将Watcher对象存在一个队列中，在下一个tick时更新异步更新视图，完成了性能优化。关于nextTick感兴趣的小伙伴可以参考<a href="https://github.com/answershuto/learnVue/blob/master/docs/Vue.js%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0DOM%E7%AD%96%E7%95%A5%E5%8F%8AnextTick.MarkDown">《Vue.js异步更新DOM策略及nextTick》</a>。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nx">updateComponent</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">vm</span><span class="p">.</span><span class="nx">_update</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">_render</span><span class="p">(),</span> <span class="nx">hydrating</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div> <p>updateComponent就执行一句话，_render函数会返回一个新的Vnode节点，传入_update中与旧的VNode对象进行对比，经过一个patch的过程得到两个VNode节点的差异，最后将这些差异渲染到真实环境形成视图。</p> <p>什么是VNode？</p> <h2 id="vnode">VNode</h2> <p>在刀耕火种的年代，我们需要在各个事件方法中直接操作DOM来达到修改视图的目的。但是当应用一大就会变得难以维护。</p> <p>那我们是不是可以把真实DOM树抽象成一棵以JavaScript对象构成的抽象树，在修改抽象树数据后将抽象树转化成真实DOM重绘到页面上呢？于是虚拟DOM出现了，它是真实DOM的一层抽象，用属性描述真实DOM的各个特性。当它发生变化的时候，就会去修改视图。</p> <p>但是这样的JavaScript操作DOM进行重绘整个视图层是相当消耗性能的，我们是不是可以每次只更新它的修改呢？所以Vue.js将DOM抽象成一个以JavaScript对象为节点的虚拟DOM树，以VNode节点模拟真实DOM，可以对这颗抽象树进行创建节点、删除节点以及修改节点等操作，在这过程中都不需要操作真实DOM，只需要操作JavaScript对象，大大提升了性能。修改以后经过diff算法得出一些需要修改的最小单位，再将这些小单位的视图进行更新。这样做减少了很多不需要的DOM操作，大大提高了性能。</p> <p>Vue就使用了这样的抽象节点VNode，它是对真实DOM的一层抽象，而不依赖某个平台，它可以是浏览器平台，也可以是weex，甚至是node平台也可以对这样一棵抽象DOM树进行创建删除修改等操作，这也为前后端同构提供了可能。</p> <p>先来看一下Vue.js源码中对VNode类的定义。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kr">export</span> <span class="k">default</span> <span class="kr">class</span> <span class="nx">VNode</span> <span class="p">{</span>
+  <span class="nl">tag</span><span class="p">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nl">data</span><span class="p">:</span> <span class="nx">VNodeData</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nl">children</span><span class="p">:</span> <span class="p">?</span><span class="nb">Array</span><span class="o">&lt;</span><span class="nx">VNode</span><span class="o">&gt;</span><span class="p">;</span>
+  <span class="nl">text</span><span class="p">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nl">elm</span><span class="p">:</span> <span class="nx">Node</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nl">ns</span><span class="p">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nl">context</span><span class="p">:</span> <span class="nx">Component</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span> <span class="c1">// rendered in this component's scope</span>
+  <span class="nl">functionalContext</span><span class="p">:</span> <span class="nx">Component</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span> <span class="c1">// only for functional component root nodes</span>
+  <span class="nl">key</span><span class="p">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="nx">number</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nl">componentOptions</span><span class="p">:</span> <span class="nx">VNodeComponentOptions</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span>
+  <span class="nl">componentInstance</span><span class="p">:</span> <span class="nx">Component</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span> <span class="c1">// component instance</span>
+  <span class="nl">parent</span><span class="p">:</span> <span class="nx">VNode</span> <span class="o">|</span> <span class="k">void</span><span class="p">;</span> <span class="c1">// component placeholder node</span>
+  <span class="nl">raw</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span> <span class="c1">// contains raw HTML? (server only)</span>
+  <span class="nl">isStatic</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span> <span class="c1">// hoisted static node</span>
+  <span class="nl">isRootInsert</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span> <span class="c1">// necessary for enter transition check</span>
+  <span class="nl">isComment</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span> <span class="c1">// empty comment placeholder?</span>
+  <span class="nl">isCloned</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span> <span class="c1">// is a cloned node?</span>
+  <span class="nl">isOnce</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">;</span> <span class="c1">// is a v-once node?</span>
+
+  <span class="nx">constructor</span> <span class="p">(</span>
+    <span class="nx">tag</span><span class="p">?:</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="nx">data</span><span class="p">?:</span> <span class="nx">VNodeData</span><span class="p">,</span>
+    <span class="nx">children</span><span class="p">?:</span> <span class="p">?</span><span class="nb">Array</span><span class="o">&lt;</span><span class="nx">VNode</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nx">text</span><span class="p">?:</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="nx">elm</span><span class="p">?:</span> <span class="nx">Node</span><span class="p">,</span>
+    <span class="nx">context</span><span class="p">?:</span> <span class="nx">Component</span><span class="p">,</span>
+    <span class="nx">componentOptions</span><span class="p">?:</span> <span class="nx">VNodeComponentOptions</span>
+  <span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/*当前节点的标签名*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">tag</span> <span class="o">=</span> <span class="nx">tag</span>
+    <span class="cm">/*当前节点对应的对象，包含了具体的一些数据信息，是一个VNodeData类型，可以参考VNodeData类型中的数据信息*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span>
+    <span class="cm">/*当前节点的子节点，是一个数组*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">children</span> <span class="o">=</span> <span class="nx">children</span>
+    <span class="cm">/*当前节点的文本*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="nx">text</span>
+    <span class="cm">/*当前虚拟节点对应的真实dom节点*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">elm</span> <span class="o">=</span> <span class="nx">elm</span>
+    <span class="cm">/*当前节点的名字空间*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">ns</span> <span class="o">=</span> <span class="kc">undefined</span>
+    <span class="cm">/*编译作用域*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">context</span> <span class="o">=</span> <span class="nx">context</span>
+    <span class="cm">/*函数化组件作用域*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">functionalContext</span> <span class="o">=</span> <span class="kc">undefined</span>
+    <span class="cm">/*节点的key属性，被当作节点的标志，用以优化*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">key</span> <span class="o">=</span> <span class="nx">data</span> <span class="o">&amp;&amp;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">key</span>
+    <span class="cm">/*组件的option选项*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">componentOptions</span> <span class="o">=</span> <span class="nx">componentOptions</span>
+    <span class="cm">/*当前节点对应的组件的实例*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">componentInstance</span> <span class="o">=</span> <span class="kc">undefined</span>
+    <span class="cm">/*当前节点的父节点*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">parent</span> <span class="o">=</span> <span class="kc">undefined</span>
+    <span class="cm">/*简而言之就是是否为原生HTML或只是普通文本，innerHTML的时候为true，textContent的时候为false*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">raw</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="cm">/*静态节点标志*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">isStatic</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="cm">/*是否作为跟节点插入*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">isRootInsert</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="cm">/*是否为注释节点*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">isComment</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="cm">/*是否为克隆节点*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">isCloned</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="cm">/*是否有v-once指令*/</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">isOnce</span> <span class="o">=</span> <span class="kc">false</span>
+  <span class="p">}</span>
+
+  <span class="c1">// DEPRECATED: alias for componentInstance for backwards compat.</span>
+  <span class="cm">/* istanbul ignore next */</span>
+  <span class="nx">get</span> <span class="nx">child</span> <span class="p">():</span> <span class="nx">Component</span> <span class="o">|</span> <span class="k">void</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">componentInstance</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <p>这是一个最基础的VNode节点，作为其他派生VNode类的基类，里面定义了下面这些数据。</p> <p>tag: 当前节点的标签名</p> <p>data: 当前节点对应的对象，包含了具体的一些数据信息，是一个VNodeData类型，可以参考VNodeData类型中的数据信息</p> <p>children: 当前节点的子节点，是一个数组</p> <p>text: 当前节点的文本</p> <p>elm: 当前虚拟节点对应的真实dom节点</p> <p>ns: 当前节点的名字空间</p> <p>context: 当前节点的编译作用域</p> <p>functionalContext: 函数化组件作用域</p> <p>key: 节点的key属性，被当作节点的标志，用以优化</p> <p>componentOptions: 组件的option选项</p> <p>componentInstance: 当前节点对应的组件的实例</p> <p>parent: 当前节点的父节点</p> <p>raw: 简而言之就是是否为原生HTML或只是普通文本，innerHTML的时候为true，textContent的时候为false</p> <p>isStatic: 是否为静态节点</p> <p>isRootInsert: 是否作为跟节点插入</p> <p>isComment: 是否为注释节点</p> <p>isCloned: 是否为克隆节点</p> <p>isOnce: 是否有v-once指令</p> <hr /> <p>打个比方，比如说我现在有这么一个VNode树</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="err">tag:</span><span class="w"> </span><span class="err">'div'</span><span class="w">
+    </span><span class="err">data:</span><span class="w"> </span><span class="err">{</span><span class="w">
+        </span><span class="err">class:</span><span class="w"> </span><span class="err">'test'</span><span class="w">
+    </span><span class="p">}</span><span class="err">,</span><span class="w">
+    </span><span class="err">children:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="err">tag:</span><span class="w"> </span><span class="err">'span',</span><span class="w">
+            </span><span class="err">data:</span><span class="w"> </span><span class="err">{</span><span class="w">
+                </span><span class="err">class:</span><span class="w"> </span><span class="err">'demo'</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+            </span><span class="err">text:</span><span class="w"> </span><span class="err">'hello</span><span class="p">,</span><span class="err">VNode'</span><span class="w">
+        </span><span class="err">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="err">}</span><span class="w">
+</span></code></pre></div> <p>渲染之后的结果就是这样的</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"test"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"demo"</span><span class="nt">&gt;</span>hello,VNode<span class="nt">&lt;/span&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div> <p>更多操作VNode的方法，请参考<a href="https://github.com/answershuto/learnVue/blob/master/docs/VNode%E8%8A%82%E7%82%B9.MarkDown">《VNode节点》</a>。</p> <h2 id="patch">patch</h2> <p>最后_update会将新旧两个VNode进行一次patch的过程，得出两个VNode最小的差异，然后将这些差异渲染到视图上。</p> <p>首先说一下patch的核心diff算法，diff算法是通过同层的树节点进行比较而非对树进行逐层搜索遍历的方式，所以时间复杂度只有O(n)，是一种相当高效的算法。</p> <p><img src="https://i.loli.net/2017/08/27/59a23cfca50f3.png" alt="img" /></p> <p><img src="https://i.loli.net/2017/08/27/59a2419a3c617.png" alt="img" /></p> <p>这两张图代表旧的VNode与新VNode进行patch的过程，他们只是在同层级的VNode之间进行比较得到变化（第二张图中相同颜色的方块代表互相进行比较的VNode节点），然后修改变化的视图，所以十分高效。</p> <p>在patch的过程中，如果两个VNode被认为是同一个VNode（sameVnode），则会进行深度的比较，得出最小差异，否则直接删除旧有DOM节点，创建新的DOM节点。</p> <p>什么是sameVnode？</p> <p>我们来看一下sameVnode的实现。</p><pre><code class="language-JavaScript">/*
+  判断两个VNode节点是否是同一个节点，需要满足以下条件
+  key相同
+  tag（当前节点的标签名）相同
+  isComment（是否为注释节点）相同
+  是否data（当前节点对应的对象，包含了具体的一些数据信息，是一个VNodeData类型，可以参考VNodeData类型中的数据信息）都有定义
+  当标签是&lt;input&gt;的时候，type必须相同
+*/
+function sameVnode (a, b) {
+  return (
+    a.key === b.key &amp;&amp;
+    a.tag === b.tag &amp;&amp;
+    a.isComment === b.isComment &amp;&amp;
+    isDef(a.data) === isDef(b.data) &amp;&amp;
+    sameInputType(a, b)
+  )
+}
+
+// Some browsers do not support dynamically changing type for &lt;input&gt;
+// so they need to be treated as different nodes
+/*
+  判断当标签是&lt;input&gt;的时候，type是否相同
+  某些浏览器不支持动态修改&lt;input&gt;类型，所以他们被视为不同类型
+*/
+function sameInputType (a, b) {
+  if (a.tag !== 'input') return true
+  let i
+  const typeA = isDef(i = a.data) &amp;&amp; isDef(i = i.attrs) &amp;&amp; i.type
+  const typeB = isDef(i = b.data) &amp;&amp; isDef(i = i.attrs) &amp;&amp; i.type
+  return typeA === typeB
+}
+</code></pre><p>当两个VNode的tag、key、isComment都相同，并且同时定义或未定义data的时候，且如果标签为input则type必须相同。这时候这两个VNode则算sameVnode，可以直接进行patchVnode操作。</p> <p>patchVnode的规则是这样的：</p> <p>1.如果新旧VNode都是静态的，同时它们的key相同（代表同一节点），并且新的VNode是clone或者是标记了once（标记v-once属性，只渲染一次），那么只需要替换elm以及componentInstance即可。</p> <p>2.新老节点均有children子节点，则对子节点进行diff操作，调用updateChildren，这个updateChildren也是diff的核心。</p> <p>3.如果老节点没有子节点而新节点存在子节点，先清空老节点DOM的文本内容，然后为当前DOM节点加入子节点。</p> <p>4.当新节点没有子节点而老节点有子节点的时候，则移除该DOM节点的所有子节点。</p> <p>5.当新老节点都无子节点的时候，只是文本的替换。</p> <h2 id="updatechildren">updateChildren</h2><pre><code class="language-JavaScript">  function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
+    let oldStartIdx = 0
+    let newStartIdx = 0
+    let oldEndIdx = oldCh.length - 1
+    let oldStartVnode = oldCh[0]
+    let oldEndVnode = oldCh[oldEndIdx]
+    let newEndIdx = newCh.length - 1
+    let newStartVnode = newCh[0]
+    let newEndVnode = newCh[newEndIdx]
+    let oldKeyToIdx, idxInOld, elmToMove, refElm
+
+    // removeOnly is a special flag used only by &lt;transition-group&gt;
+    // to ensure removed elements stay in correct relative positions
+    // during leaving transitions
+    const canMove = !removeOnly
+
+    while (oldStartIdx &lt;= oldEndIdx &amp;&amp; newStartIdx &lt;= newEndIdx) {
+      if (isUndef(oldStartVnode)) {
+        oldStartVnode = oldCh[++oldStartIdx] // Vnode has been moved left
+      } else if (isUndef(oldEndVnode)) {
+        oldEndVnode = oldCh[--oldEndIdx]
+      } else if (sameVnode(oldStartVnode, newStartVnode)) {
+        /*前四种情况其实是指定key的时候，判定为同一个VNode，则直接patchVnode即可，分别比较oldCh以及newCh的两头节点2*2=4种情况*/
+        patchVnode(oldStartVnode, newStartVnode, insertedVnodeQueue)
+        oldStartVnode = oldCh[++oldStartIdx]
+        newStartVnode = newCh[++newStartIdx]
+      } else if (sameVnode(oldEndVnode, newEndVnode)) {
+        patchVnode(oldEndVnode, newEndVnode, insertedVnodeQueue)
+        oldEndVnode = oldCh[--oldEndIdx]
+        newEndVnode = newCh[--newEndIdx]
+      } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
+        patchVnode(oldStartVnode, newEndVnode, insertedVnodeQueue)
+        canMove &amp;&amp; nodeOps.insertBefore(parentElm, oldStartVnode.elm, nodeOps.nextSibling(oldEndVnode.elm))
+        oldStartVnode = oldCh[++oldStartIdx]
+        newEndVnode = newCh[--newEndIdx]
+      } else if (sameVnode(oldEndVnode, newStartVnode)) { // Vnode moved left
+        patchVnode(oldEndVnode, newStartVnode, insertedVnodeQueue)
+        canMove &amp;&amp; nodeOps.insertBefore(parentElm, oldEndVnode.elm, oldStartVnode.elm)
+        oldEndVnode = oldCh[--oldEndIdx]
+        newStartVnode = newCh[++newStartIdx]
+      } else {
+        /*
+          生成一个key与旧VNode的key对应的哈希表（只有第一次进来undefined的时候会生成，也为后面检测重复的key值做铺垫）
+          比如childre是这样的 [{xx: xx, key: 'key0'}, {xx: xx, key: 'key1'}, {xx: xx, key: 'key2'}]  beginIdx = 0   endIdx = 2  
+          结果生成{key0: 0, key1: 1, key2: 2}
+        */
+        if (isUndef(oldKeyToIdx)) oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx)
+        /*如果newStartVnode新的VNode节点存在key并且这个key在oldVnode中能找到则返回这个节点的idxInOld（即第几个节点，下标）*/
+        idxInOld = isDef(newStartVnode.key) ? oldKeyToIdx[newStartVnode.key] : null
+        if (isUndef(idxInOld)) { // New element
+          /*newStartVnode没有key或者是该key没有在老节点中找到则创建一个新的节点*/
+          createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm)
+          newStartVnode = newCh[++newStartIdx]
+        } else {
+          /*获取同key的老节点*/
+          elmToMove = oldCh[idxInOld]
+          /* istanbul ignore if */
+          if (process.env.NODE_ENV !== 'production' &amp;&amp; !elmToMove) {
+            /*如果elmToMove不存在说明之前已经有新节点放入过这个key的DOM中，提示可能存在重复的key，确保v-for的时候item有唯一的key值*/
+            warn(
+              'It seems there are duplicate keys that is causing an update error. ' +
+              'Make sure each v-for item has a unique key.'
+            )
+          }
+          if (sameVnode(elmToMove, newStartVnode)) {
+            /*Github:https://github.com/answershuto*/
+            /*如果新VNode与得到的有相同key的节点是同一个VNode则进行patchVnode*/
+            patchVnode(elmToMove, newStartVnode, insertedVnodeQueue)
+            /*因为已经patchVnode进去了，所以将这个老节点赋值undefined，之后如果还有新节点与该节点key相同可以检测出来提示已有重复的key*/
+            oldCh[idxInOld] = undefined
+            /*当有标识位canMove实可以直接插入oldStartVnode对应的真实DOM节点前面*/
+            canMove &amp;&amp; nodeOps.insertBefore(parentElm, newStartVnode.elm, oldStartVnode.elm)
+            newStartVnode = newCh[++newStartIdx]
+          } else {
+            // same key but different element. treat as new element
+            /*当新的VNode与找到的同样key的VNode不是sameVNode的时候（比如说tag不一样或者是有不一样type的input标签），创建一个新的节点*/
+            createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm)
+            newStartVnode = newCh[++newStartIdx]
+          }
+        }
+      }
+    }
+    if (oldStartIdx &gt; oldEndIdx) {
+      /*全部比较完成以后，发现oldStartIdx &gt; oldEndIdx的话，说明老节点已经遍历完了，新节点比老节点多，所以这时候多出来的新节点需要一个一个创建出来加入到真实DOM中*/
+      refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm
+      addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue)
+    } else if (newStartIdx &gt; newEndIdx) {
+      /*如果全部比较完成以后发现newStartIdx &gt; newEndIdx，则说明新节点已经遍历完了，老节点多余新节点，这个时候需要将多余的老节点从真实DOM中移除*/
+      removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
+    }
+  }
+</code></pre><p>直接看源码可能比较难以捋清其中的关系，我们通过图来看一下。</p> <p><img src="https://i.loli.net/2017/08/28/59a4015bb2765.png" alt="img" /></p> <p>首先，在新老两个VNode节点的左右头尾两侧都有一个变量标记，在遍历过程中这几个变量都会向中间靠拢。当oldStartIdx &lt;= oldEndIdx或者newStartIdx &lt;= newEndIdx时结束循环。</p> <p>索引与VNode节点的对应关系： oldStartIdx =&gt; oldStartVnode oldEndIdx =&gt; oldEndVnode newStartIdx =&gt; newStartVnode newEndIdx =&gt; newEndVnode</p> <p>在遍历中，如果存在key，并且满足sameVnode，会将该DOM节点进行复用，否则则会创建一个新的DOM节点。</p> <p>首先，oldStartVnode、oldEndVnode与newStartVnode、newEndVnode两两比较一共有2*2=4种比较方法。</p> <p>当新老VNode节点的start或者end满足sameVnode时，也就是sameVnode(oldStartVnode, newStartVnode)或者sameVnode(oldEndVnode, newEndVnode)，直接将该VNode节点进行patchVnode即可。</p> <p><img src="https://i.loli.net/2017/08/28/59a40c12c1655.png" alt="img" /></p> <p>如果oldStartVnode与newEndVnode满足sameVnode，即sameVnode(oldStartVnode, newEndVnode)。</p> <p>这时候说明oldStartVnode已经跑到了oldEndVnode后面去了，进行patchVnode的同时还需要将真实DOM节点移动到oldEndVnode的后面。</p> <p><img src="https://ooo.0o0.ooo/2017/08/28/59a4214784979.png" alt="img" /></p> <p>如果oldEndVnode与newStartVnode满足sameVnode，即sameVnode(oldEndVnode, newStartVnode)。</p> <p>这说明oldEndVnode跑到了oldStartVnode的前面，进行patchVnode的同时真实的DOM节点移动到了oldStartVnode的前面。</p> <p><img src="https://i.loli.net/2017/08/29/59a4c70685d12.png" alt="img" /></p> <p>如果以上情况均不符合，则通过createKeyToOldIdx会得到一个oldKeyToIdx，里面存放了一个key为旧的VNode，value为对应index序列的哈希表。从这个哈希表中可以找到是否有与newStartVnode一致key的旧的VNode节点，如果同时满足sameVnode，patchVnode的同时会将这个真实DOM（elmToMove）移动到oldStartVnode对应的真实DOM的前面。</p> <p><img src="https://i.loli.net/2017/08/29/59a4d7552d299.png" alt="img" /></p> <p>当然也有可能newStartVnode在旧的VNode节点找不到一致的key，或者是即便key相同却不是sameVnode，这个时候会调用createElm创建一个新的DOM节点。</p> <p><img src="https://i.loli.net/2017/08/29/59a4de0fa4dba.png" alt="img" /></p> <p>到这里循环已经结束了，那么剩下我们还需要处理多余或者不够的真实DOM节点。</p> <p>1.当结束时oldStartIdx &gt; oldEndIdx，这个时候老的VNode节点已经遍历完了，但是新的节点还没有。说明了新的VNode节点实际上比老的VNode节点多，也就是比真实DOM多，需要将剩下的（也就是新增的）VNode节点插入到真实DOM节点中去，此时调用addVnodes（批量调用createElm的接口将这些节点加入到真实DOM中去）。</p> <p><img src="https://i.loli.net/2017/08/29/59a509f0d1788.png" alt="img" /></p> <p>2。同理，当newStartIdx &gt; newEndIdx时，新的VNode节点已经遍历完了，但是老的节点还有剩余，说明真实DOM节点多余了，需要从文档中删除，这时候调用removeVnodes将这些多余的真实DOM删除。</p> <p><img src="https://i.loli.net/2017/08/29/59a4f389b98cb.png" alt="img" /></p> <p>更详细的diff实现参考笔者的文章<a href="https://github.com/answershuto/learnVue/blob/master/docs/VirtualDOM%E4%B8%8Ediff(Vue%E5%AE%9E%E7%8E%B0).MarkDown">VirtualDOM与diff(Vue.js实现)</a>。</p> <h2 id="dom">映射到真实DOM</h2> <p>由于Vue使用了虚拟DOM，所以虚拟DOM可以在任何支持JavaScript语言的平台上操作，譬如说目前Vue支持的浏览器平台或是weex，在虚拟DOM的实现上是一致的。那么最后虚拟DOM如何映射到真实的DOM节点上呢？</p> <p>Vue为平台做了一层适配层，浏览器平台见<a href="https://github.com/answershuto/learnVue/blob/master/vue-src/platforms/web/runtime/node-ops.js">/platforms/web/runtime/node-ops.js</a>以及weex平台见<a href="https://github.com/answershuto/learnVue/blob/master/vue-src/platforms/weex/runtime/node-ops.js">/platforms/weex/runtime/node-ops.js</a>。不同平台之间通过适配层对外提供相同的接口，虚拟DOM进行操作真实DOM节点的时候，只需要调用这些适配层的接口即可，而内部实现则不需要关心，它会根据平台的改变而改变。</p> <p>现在又出现了一个问题，我们只是将虚拟DOM映射成了真实的DOM。那如何给这些DOM加入attr、class、style等DOM属性呢？</p> <p>这要依赖于虚拟DOM的生命钩子。虚拟DOM提供了如下的钩子函数，分别在不同的时期会进行调用。</p><pre><code class="language-JavaScript">const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
+
+/*构建cbs回调函数，web平台上见/platforms/web/runtime/modules*/
+  for (i = 0; i &lt; hooks.length; ++i) {
+    cbs[hooks[i]] = []
+    for (j = 0; j &lt; modules.length; ++j) {
+      if (isDef(modules[j][hooks[i]])) {
+        cbs[hooks[i]].push(modules[j][hooks[i]])
+      }
+    }
+  }
+</code></pre><p>同理，也会根据不同平台有自己不同的实现，我们这里以Web平台为例。Web平台的钩子函数见<a href="https://github.com/answershuto/learnVue/tree/master/vue-src/platforms/web/runtime/modules">/platforms/web/runtime/modules</a>。里面有对attr、class、props、events、style以及transition（过渡状态）的DOM属性进行操作。</p> <p>以attr为例，代码很简单。</p><pre><code class="language-JavaScript">/* @flow */
+
+import { isIE9 } from 'core/util/env'
+
+import {
+  extend,
+  isDef,
+  isUndef
+} from 'shared/util'
+
+import {
+  isXlink,
+  xlinkNS,
+  getXlinkProp,
+  isBooleanAttr,
+  isEnumeratedAttr,
+  isFalsyAttrValue
+} from 'web/util/index'
+
+/*更新attr*/
+function updateAttrs (oldVnode: VNodeWithData, vnode: VNodeWithData) {
+  /*如果旧的以及新的VNode节点均没有attr属性，则直接返回*/
+  if (isUndef(oldVnode.data.attrs) &amp;&amp; isUndef(vnode.data.attrs)) {
+    return
+  }
+  let key, cur, old
+  /*VNode节点对应的Dom实例*/
+  const elm = vnode.elm
+  /*旧VNode节点的attr*/
+  const oldAttrs = oldVnode.data.attrs || {}
+  /*新VNode节点的attr*/
+  let attrs: any = vnode.data.attrs || {}
+  // clone observed objects, as the user probably wants to mutate it
+  /*如果新的VNode的attr已经有__ob__（代表已经被Observe处理过了）， 进行深拷贝*/
+  if (isDef(attrs.__ob__)) {
+    attrs = vnode.data.attrs = extend({}, attrs)
+  }
+
+  /*遍历attr，不一致则替换*/
+  for (key in attrs) {
+    cur = attrs[key]
+    old = oldAttrs[key]
+    if (old !== cur) {
+      setAttr(elm, key, cur)
+    }
+  }
+  // #4391: in IE9, setting type can reset value for input[type=radio]
+  /* istanbul ignore if */
+  if (isIE9 &amp;&amp; attrs.value !== oldAttrs.value) {
+    setAttr(elm, 'value', attrs.value)
+  }
+  for (key in oldAttrs) {
+    if (isUndef(attrs[key])) {
+      if (isXlink(key)) {
+        elm.removeAttributeNS(xlinkNS, getXlinkProp(key))
+      } else if (!isEnumeratedAttr(key)) {
+        elm.removeAttribute(key)
+      }
+    }
+  }
+}
+
+/*设置attr*/
+function setAttr (el: Element, key: string, value: any) {
+  if (isBooleanAttr(key)) {
+    // set attribute for blank value
+    // e.g. &lt;option disabled&gt;Select one&lt;/option&gt;
+    if (isFalsyAttrValue(value)) {
+      el.removeAttribute(key)
+    } else {
+      el.setAttribute(key, key)
+    }
+  } else if (isEnumeratedAttr(key)) {
+    el.setAttribute(key, isFalsyAttrValue(value) || value === 'false' ? 'false' : 'true')
+  } else if (isXlink(key)) {
+    if (isFalsyAttrValue(value)) {
+      el.removeAttributeNS(xlinkNS, getXlinkProp(key))
+    } else {
+      el.setAttributeNS(xlinkNS, key, value)
+    }
+  } else {
+    if (isFalsyAttrValue(value)) {
+      el.removeAttribute(key)
+    } else {
+      el.setAttribute(key, value)
+    }
+  }
+}
+
+export default {
+  create: updateAttrs,
+  update: updateAttrs
+}
+
+</code></pre><p>attr只需要在create以及update钩子被调用时更新DOM的attr属性即可。</p> <h2 id="section-1">最后</h2> <p>至此，我们已经从template到真实DOM的整个过程梳理完了。现在再去看这张图，是不是更清晰了呢？</p> <p><img src="https://cn.vuejs.org/images/data.png" alt="" /></p> </div> </article> <footer class="site-footer"> <div class="container"> <ul class="social"> <li><a href="http://github.com/answershuto" target="_blank"><i class="icon icon-github"></i></a></li> </ul> <p> <br><small>&copy;2017 CaoYang , All rights reserved.</small> </p> </div> </footer> </main> <script src="/assets/js/jquery-2.1.1.js"></script> <script src="/assets/js/main.js"></script> </body> </html><!-- by nandomoreira.me -->
