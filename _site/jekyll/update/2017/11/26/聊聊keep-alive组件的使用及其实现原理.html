@@ -1,0 +1,119 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>聊聊keep-alive组件的使用及其实现原理</title> <meta name="description" content="聊聊keep-alive组件的使用及其实现原理"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="/jekyll/update/2017/11/26/%E8%81%8A%E8%81%8Akeep-alive%E7%BB%84%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E5%8F%8A%E5%85%B6%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86.html"> <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml"> <script src="/assets/js/modernizr.js"></script> </head> <body"> <main class="wrapper"> <header class="site-header"> <a href="#navbar" id="menu-burger" class="menu-burger">Menu <span class="nav-icon"></span> <svg x="0px" y="0px" width="54px" height="54px" viewBox="0 0 54 54"> <circle fill="transparent" stroke="#000000" stroke-width="1" cx="27" cy="27" r="25" stroke-dasharray="157 157" stroke-dashoffset="157"></circle> </svg> </a> <div id="navbar" class="navbar"> <div class="navigation-wrapper"> <div class="half-block"> <h2>Navigation</h2> <nav> <ul class="primary-nav"> <li><a href="/">Home</a></li> <li><a href="/blog">Blog</a></li> <li><a href="/about">About</a></li> <li><a href="https://github.com/answershuto" ><i class="icon icon-github"></i> Github</a></li> </ul> </nav> </div> </div> </div> </header> <article class="post" itemscope itemtype="http://schema.org/BlogPosting"> <header class="post-header intro"> <div class="intro-in"> <h1 class="post-title" itemprop="name headline">聊聊keep-alive组件的使用及其实现原理</h1> <p class="post-meta"><time datetime="2017-11-26T19:59:00+08:00" itemprop="datePublished">Nov 26, 2017</time></p> </div> </header> <div class="post-content container" itemprop="articleBody"> <h2 id="keep-alive">keep-alive</h2> <p>keep-alive是Vue.js的一个内置组件。它能够不活动的组件实例保存在内存中，而不是直接将其销毁，它是一个抽象组件，不会被渲染到真实DOM中，也不会出现在父组件链中。</p> <p>它提供了include与exclude两个属性，允许组件有条件地进行缓存。</p> <p>具体内容可以参考<a href="https://cn.vuejs.org/v2/api/#keep-alive">官网</a>。</p> <h2 id="section">使用</h2> <h3 id="section-1">用法</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;keep-alive&gt;</span>
+    <span class="nt">&lt;component&gt;&lt;/component&gt;</span>
+<span class="nt">&lt;/keep-alive&gt;</span>
+</code></pre></div> <p>这里的component组件会被缓存起来。</p> <h3 id="section-2">举个栗子</h3> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;keep-alive&gt;</span>
+    <span class="nt">&lt;coma</span> <span class="na">v-if=</span><span class="s">"test"</span><span class="nt">&gt;&lt;/coma&gt;</span>
+    <span class="nt">&lt;comb</span> <span class="na">v-else</span><span class="nt">&gt;&lt;/comb&gt;</span>
+<span class="nt">&lt;/keep-alive&gt;</span>
+<span class="nt">&lt;button</span> <span class="err">@</span><span class="na">click=</span><span class="s">"test=handleClick"</span><span class="nt">&gt;</span>请点击<span class="nt">&lt;/button&gt;</span>
+</code></pre></div> <div class="highlighter-rouge"><pre class="highlight"><code><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
+    <span class="nx">data</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="na">test</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nx">handleClick</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">test</span> <span class="o">=</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">test</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <p>在点击button时候，coma与comb两个组件会发生切换，但是这时候这两个组件的状态会被缓存起来，比如说coma与comb组件中都有一个input标签，那么input标签中的内容不会因为组件的切换而消失。</p> <h3 id="props">props</h3> <p>keep-alive组件提供了include与exclude两个属性来允许组件有条件地进行缓存，二者都可以用逗号分隔字符串、正则表达式或一个数组来表示。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;keep-alive</span> <span class="na">include=</span><span class="s">"a"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;component&gt;&lt;/component&gt;</span>
+<span class="nt">&lt;/keep-alive&gt;</span>
+</code></pre></div> <p>将缓存name为a的组件。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;keep-alive</span> <span class="na">exclude=</span><span class="s">"a"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;component&gt;&lt;/component&gt;</span>
+<span class="nt">&lt;/keep-alive&gt;</span>
+</code></pre></div> <p>name为a的组件将不会被缓存。</p> <h3 id="section-3">生命钩子</h3> <p>keep-alive提供了两个生命钩子，分别是activated与deactivated。</p> <p>因为keep-alive会将组件保存在内存中，并不会销毁以及重新创建，所以不会重新调用组件的created等方法，需要用activated与deactivated这两个生命钩子来得知当前组件是否处于活动状态。</p> <hr /> <h2 id="keep-alive-1">深入keep-alive组件实现</h2> <p>说完了keep-alive组件的使用，我们从源码角度看一下keep-alive组件究竟是如何实现组件的缓存的呢？</p> <h3 id="createddestroyed">created与destroyed钩子</h3> <p>created钩子会创建一个cache对象，用来作为缓存容器，保存vnode节点。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nx">created</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="cm">/* 缓存对象 */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">cache</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span>
+<span class="p">},</span>
+</code></pre></div> <p>destroyed钩子则在组件被销毁的时候清除cache缓存中的所有组件实例。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/* destroyed钩子中销毁所有cache中的组件实例 */</span>
+<span class="nx">destroyed</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">key</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pruneCacheEntry</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">},</span>
+</code></pre></div> <h3 id="render">render</h3> <p>接下来是render函数。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nx">render</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="cm">/* 得到slot插槽中的第一个组件 */</span>
+    <span class="kr">const</span> <span class="nx">vnode</span><span class="err">:</span> <span class="nx">VNode</span> <span class="o">=</span> <span class="nx">getFirstComponentChild</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">$slots</span><span class="p">.</span><span class="k">default</span><span class="p">)</span>
+
+    <span class="kr">const</span> <span class="nx">componentOptions</span><span class="err">:</span> <span class="p">?</span><span class="nx">VNodeComponentOptions</span> <span class="o">=</span> <span class="nx">vnode</span> <span class="o">&amp;&amp;</span> <span class="nx">vnode</span><span class="p">.</span><span class="nx">componentOptions</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">componentOptions</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// check pattern</span>
+        <span class="cm">/* 获取组件名称，优先获取组件的name字段，否则是组件的tag */</span>
+        <span class="kr">const</span> <span class="nx">name</span><span class="p">:</span> <span class="p">?</span><span class="nx">string</span> <span class="o">=</span> <span class="nx">getComponentName</span><span class="p">(</span><span class="nx">componentOptions</span><span class="p">)</span>
+        <span class="cm">/* name不在inlcude中或者在exlude中则直接返回vnode（没有取缓存） */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="p">(</span>
+        <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">include</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">matches</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">include</span><span class="p">,</span> <span class="nx">name</span><span class="p">))</span> <span class="o">||</span>
+        <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">exclude</span> <span class="o">&amp;&amp;</span> <span class="nx">matches</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">exclude</span><span class="p">,</span> <span class="nx">name</span><span class="p">))</span>
+        <span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">vnode</span>
+        <span class="p">}</span>
+        <span class="kr">const</span> <span class="nx">key</span><span class="p">:</span> <span class="p">?</span><span class="nx">string</span> <span class="o">=</span> <span class="nx">vnode</span><span class="p">.</span><span class="nx">key</span> <span class="o">==</span> <span class="kc">null</span>
+        <span class="c1">// same constructor may get registered as different local components</span>
+        <span class="c1">// so cid alone is not enough (#3269)</span>
+        <span class="p">?</span> <span class="nx">componentOptions</span><span class="p">.</span><span class="nx">Ctor</span><span class="p">.</span><span class="nx">cid</span> <span class="o">+</span> <span class="p">(</span><span class="nx">componentOptions</span><span class="p">.</span><span class="nx">tag</span> <span class="p">?</span> <span class="err">`</span><span class="p">::</span><span class="nx">$</span><span class="p">{</span><span class="nx">componentOptions</span><span class="p">.</span><span class="nx">tag</span><span class="p">}</span><span class="err">`</span> <span class="p">:</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="err">:</span> <span class="nx">vnode</span><span class="p">.</span><span class="nx">key</span>
+        <span class="cm">/* 如果已经做过缓存了则直接从缓存中获取组件实例给vnode，还未缓存过则进行缓存 */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="p">{</span>
+            <span class="nx">vnode</span><span class="p">.</span><span class="nx">componentInstance</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">componentInstance</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">vnode</span>
+        <span class="p">}</span>
+        <span class="cm">/* keepAlive标记位 */</span>
+        <span class="nx">vnode</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">keepAlive</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">vnode</span>
+<span class="p">}</span>
+</code></pre></div> <p>首先通过getFirstComponentChild获取第一个子组件，获取该组件的name（存在组件名则直接使用组件名，否则会使用tag）。接下来会将这个name通过include与exclude属性进行匹配，匹配不成功（说明不需要进行缓存）则不进行任何操作直接返回vnode，vnode是一个VNode类型的对象，不了解VNode的同学可以参考笔者的另一篇文章<a href="https://github.com/answershuto/learnVue/blob/master/docs/VNode%E8%8A%82%E7%82%B9.MarkDown">《VNode节点》</a> .</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 检测name是否匹配 */</span>
+<span class="kd">function</span> <span class="nx">matches</span> <span class="p">(</span><span class="nx">pattern</span><span class="err">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="nb">RegExp</span><span class="p">,</span> <span class="nx">name</span><span class="err">:</span> <span class="nx">string</span><span class="p">)</span><span class="err">:</span> <span class="kr">boolean</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">pattern</span> <span class="o">===</span> <span class="s1">'string'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* 字符串情况，如a,b,c */</span>
+    <span class="k">return</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">','</span><span class="p">).</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">isRegExp</span><span class="p">(</span><span class="nx">pattern</span><span class="p">))</span> <span class="p">{</span>
+    <span class="cm">/* 正则 */</span>
+    <span class="k">return</span> <span class="nx">pattern</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="cm">/* istanbul ignore next */</span>
+  <span class="k">return</span> <span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div> <p>检测include与exclude属性匹配的函数很简单，include与exclude属性支持字符串如”a,b,c”这样组件名以逗号隔开的情况以及正则表达式。matches通过这两种方式分别检测是否匹配当前组件。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="p">{</span>
+    <span class="nx">vnode</span><span class="p">.</span><span class="nx">componentInstance</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">componentInstance</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">vnode</span>
+<span class="p">}</span>
+</code></pre></div> <p>接下来的事情很简单，根据key在this.cache中查找，如果存在则说明之前已经缓存过了，直接将缓存的vnode的componentInstance（组件实例）覆盖到目前的vnode上面。否则将vnode存储在cache中。</p> <p>最后返回vnode（有缓存时该vnode的componentInstance已经被替换成缓存中的了）。</p> <h3 id="watch">watch</h3> <p>用watch来监听pruneCache与pruneCache这两个属性的改变，在改变的时候修改cache缓存中的缓存数据。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="nx">watch</span><span class="err">:</span> <span class="p">{</span>
+    <span class="cm">/* 监视include以及exclude，在被修改的时候对cache进行修正 */</span>
+    <span class="nx">include</span> <span class="p">(</span><span class="nx">val</span><span class="err">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="nb">RegExp</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pruneCache</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_vnode</span><span class="p">,</span> <span class="nx">name</span> <span class="o">=&gt;</span> <span class="nx">matches</span><span class="p">(</span><span class="nx">val</span><span class="p">,</span> <span class="nx">name</span><span class="p">))</span>
+    <span class="p">},</span>
+    <span class="nx">exclude</span> <span class="p">(</span><span class="nx">val</span><span class="err">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="nb">RegExp</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pruneCache</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">cache</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_vnode</span><span class="p">,</span> <span class="nx">name</span> <span class="o">=&gt;</span> <span class="o">!</span><span class="nx">matches</span><span class="p">(</span><span class="nx">val</span><span class="p">,</span> <span class="nx">name</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">},</span>
+</code></pre></div> <p>来看一下pruneCache的实现。</p> <div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 修正cache */</span>
+<span class="kd">function</span> <span class="nx">pruneCache</span> <span class="p">(</span><span class="nx">cache</span><span class="err">:</span> <span class="nx">VNodeCache</span><span class="p">,</span> <span class="nx">current</span><span class="err">:</span> <span class="nx">VNode</span><span class="p">,</span> <span class="nx">filter</span><span class="err">:</span> <span class="nb">Function</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">cache</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* 取出cache中的vnode */</span>
+    <span class="kr">const</span> <span class="nx">cachedNode</span><span class="err">:</span> <span class="p">?</span><span class="nx">VNode</span> <span class="o">=</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">cachedNode</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kr">const</span> <span class="nx">name</span><span class="p">:</span> <span class="p">?</span><span class="nx">string</span> <span class="o">=</span> <span class="nx">getComponentName</span><span class="p">(</span><span class="nx">cachedNode</span><span class="p">.</span><span class="nx">componentOptions</span><span class="p">)</span>
+      <span class="cm">/* name不符合filter条件的，同时不是目前渲染的vnode时，销毁vnode对应的组件实例（Vue实例），并从cache中移除 */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">filter</span><span class="p">(</span><span class="nx">name</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">cachedNode</span> <span class="o">!==</span> <span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pruneCacheEntry</span><span class="p">(</span><span class="nx">cachedNode</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span> 
+
+<span class="cm">/* 销毁vnode对应的组件实例（Vue实例） */</span>
+<span class="kd">function</span> <span class="nx">pruneCacheEntry</span> <span class="p">(</span><span class="nx">vnode</span><span class="p">:</span> <span class="p">?</span><span class="nx">VNode</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">vnode</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">vnode</span><span class="p">.</span><span class="nx">componentInstance</span><span class="p">.</span><span class="nx">$destroy</span><span class="p">()</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div> <p>遍历cache中的所有项，如果不符合filter指定的规则的话，则会执行pruneCacheEntry。pruneCacheEntry则会调用组件实例的$destroy方法来将组件销毁。</p> <h2 id="section-4">最后</h2> <p>Vue.js内部将DOM节点抽象成了一个个的<a href="https://github.com/answershuto/learnVue/blob/master/docs/VNode%E8%8A%82%E7%82%B9.MarkDown">VNode节点</a>，keep-alive组件的缓存也是基于VNode节点的而不是直接存储DOM结构。它将满足条件（pruneCache与pruneCache）的组件在cache对象中缓存起来，在需要重新渲染的时候再将vnode节点从cache对象中取出并渲染。</p> </div> </article> <footer class="site-footer"> <div class="container"> <ul class="social"> <li><a href="http://github.com/answershuto" target="_blank"><i class="icon icon-github"></i></a></li> </ul> <p> <br><small>&copy;2017 CaoYang , All rights reserved.</small> </p> </div> </footer> </main> <script src="/assets/js/jquery-2.1.1.js"></script> <script src="/assets/js/main.js"></script> </body> </html><!-- by nandomoreira.me -->
