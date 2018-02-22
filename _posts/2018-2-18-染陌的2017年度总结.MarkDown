@@ -61,7 +61,7 @@ excerpt: 总结2017，展望2018
 
 
 
-周六晚上的 after party 也非常不错，芋头跟死月两位大佬贡献了两个非常不错的 topic，萌心一边喝着啤酒一边在台下给他们拍照（抖。
+周六晚上的 after party 也非常不错，芋头跟死月两位大佬贡献了两个非常不错的 topic，萌新一边喝着啤酒一边在台下给他们拍照（抖。
 
 
 
@@ -85,7 +85,7 @@ excerpt: 总结2017，展望2018
 
 ## D2
 
-有幸在年末的时候参加了一波 D2，第一次阿里西溪园区，感觉非常高大上，虽然食堂好像并没有想象中的好吃23333333（不过好像是访客中心的食堂，是不是跟员工食堂不一样呢 -。- ）。
+有幸在年末的时候参加了一波 D2，第一次去阿里西溪园区，感觉非常高大上，虽然食堂好像并没有想象中的好吃23333333（不过好像是访客中心的食堂，是不是跟员工食堂不一样呢 -。- ）。
 
 除了听了几个非常有意思的话题，还跟在掘金上认识的小伙伴 [doodlewind](https://github.com/doodlewind) 以及 [木羽](https://juejin.im/user/5930c4382f301e006bd42795) 面了一波基。
 
@@ -113,7 +113,7 @@ excerpt: 总结2017，展望2018
 
 这一年在各个社区还算活跃，认识了不少同行的朋友，在他们身上学习了很多。
 
-比如掘金作者群的 [木羽](https://juejin.im/user/5930c4382f301e006bd42795) 、[相学长](https://juejin.im/user/58f876dc5c497d0058e38ae1)、[薛斌](https://github.com/axuebin)、[qiangdada](https://github.com/xuqiang521)等等。
+比如掘金作者群的 [木羽](https://juejin.im/user/5930c4382f301e006bd42795) 、[相学长](https://juejin.im/user/58f876dc5c497d0058e38ae1)、[薛彬](https://github.com/axuebin)、[qiangdada](https://github.com/xuqiang521)等等。
 
 比如说因写 [《剖析 Vue.js 内部运行机制》](https://juejin.im/book/5a36661851882538e2259c0f)而认识的[黄轶老师](https://github.com/ustbhuangyi)。
 
