@@ -1,12 +1,3 @@
----
-layout: post
-title:  "在mac下安装MongoDB"
-date:   2016-05-08 22:11:00 +0800
-categories: jekyll update
-tags: [搭建环境]
-excerpt: MongoDB的安装搭建过程以及启动方法的记录.
----
-
 本文主要记录我在mac上搭建MongoDB数据库环境的过程.
 
 1.首先执行

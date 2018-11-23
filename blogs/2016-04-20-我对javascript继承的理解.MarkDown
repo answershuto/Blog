@@ -1,12 +1,3 @@
----
-layout: post
-title:  "我对javascript继承的理解"
-date:   2016-04-20 22:31:00 +0800
-categories: jekyll update
-tags: [javascript] 
-excerpt: 随手纪录一下学习js继承的学习心得.
----
-
 记录一下学习js继承的学习心得，有误之处欢迎指正。
 
 javascript中的继承主要通过原型链的方式来实现，简单地说也就是对象a所指向的原型A是原型B的一个实例b，即B的实例是a所指向的原型。

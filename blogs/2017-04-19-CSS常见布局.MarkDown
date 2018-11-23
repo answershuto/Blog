@@ -1,12 +1,3 @@
----
-layout: post
-title:  "CSS常见布局"
-date:   2017-04-19 14:00:00 +0800
-categories: jekyll update
-tags: [CSS] 
-excerpt: CSS常见布局
----
-
 ## 左列固定宽度，右列自适应
 
 ### 使用flex布局实现

@@ -1,12 +1,3 @@
----
-layout: post
-title:  "VNode节点"
-date:   2017-08-20 21:00:00 +0800
-categories: jekyll update
-tags: [Vue.js] 
-excerpt: 说说Vue的VNode节点.
----
-
 ## 抽象Dom树
 
 在刀耕火种的年代，我们需要在各个事件方法中直接操作Dom来达到修改视图的目的。但是当应用一大就会变得难以维护。

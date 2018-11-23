@@ -1,12 +1,3 @@
----
-layout: post
-title:  "染陌的2017年度总结"
-date:   2018-02-21 18:00:00 +0800
-categories: jekyll update
-tags: [年度总结] 
-excerpt: 总结2017，展望2018
----
-
 ## 写在前面
 
 看到了[死月](https://github.com/XadillaX)、[doodlewind](https://github.com/doodlewind)、[佳楠](https://github.com/plusmancn)等朋友都写了关于 2017 的年度总结，总觉得自己也应该写点东西来回首过去的一年，顺便展望一下未来的 2018 年。

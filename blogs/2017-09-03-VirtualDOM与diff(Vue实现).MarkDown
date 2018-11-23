@@ -1,12 +1,3 @@
----
-layout: post
-title:  "VirtualDOM与diff(Vue实现)"
-date:   2017-09-03 20:12:00 +0800
-categories: jekyll update
-tags: [Vue.js] 
-excerpt: VirtualDOM与diff(Vue实现)
----
-
 ## VNode
 
 在刀耕火种的年代，我们需要在各个事件方法中直接操作DOM来达到修改视图的目的。但是当应用一大就会变得难以维护。

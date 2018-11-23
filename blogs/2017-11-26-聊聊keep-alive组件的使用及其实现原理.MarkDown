@@ -1,12 +1,3 @@
----
-layout: post
-title:  "聊聊keep-alive组件的使用及其实现原理"
-date:   2017-11-26 19:59:00 +0800
-categories: jekyll update
-tags: [Vue.js] 
-excerpt: 聊聊keep-alive组件的使用及其实现原理
----
-
 ## keep-alive
 
 keep-alive是Vue.js的一个内置组件。它能够不活动的组件实例保存在内存中，而不是直接将其销毁，它是一个抽象组件，不会被渲染到真实DOM中，也不会出现在父组件链中。

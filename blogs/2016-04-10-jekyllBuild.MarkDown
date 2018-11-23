@@ -1,14 +1,3 @@
----
-layout: post
-title:  "用github + jekyll搭建自己的blog"
-date:   2016-04-10 23:14:00 +0800
-categories: jekyll update
-tags: [jekyll 前端] 
-excerpt: 本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑.
----
-
-
-
 本文主要记录一下自己在用jekyll在osX平台搭建个人博客开发环境、部署页面的过程以及遇到的一些坑，<br>有误之处望请包涵指正。
 
 >>![img](/img/jekyllBuild/octojekyll.png) 

@@ -1,12 +1,3 @@
----
-layout: post
-title:  "用safari对移动设备进行远程调试"
-date:   2016-06-17 23:40:00 +0800
-categories: jekyll update
-tags: [远程调试] 
-excerpt: 用safari对移动设备进行远程调试
----
-
 因为在写一个基于移动设备陀螺仪功能的小游戏，所以遇到了这个移动设备调试的问题，在网上找到了用safari远程调试的方法，记录一下。
 
 工具：Mac iPhone

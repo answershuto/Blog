@@ -1,14 +1,3 @@
----
-layout: post
-title:  "微信小程序Demo"
-date:   2016-11-13 20:33:00 +0800
-categories: jekyll update
-tags: [前端 微信] 
-excerpt: 一个微信小程序Demo
----
-
-
-
 ## 建立微信小程序工程
 
 打开微信开发者工具，可以直接去官网下载。

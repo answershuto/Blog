@@ -1,12 +1,3 @@
----
-layout: post
-title:  "聊聊Vue的template编译"
-date:   2017-09-10 19:40:00 +0800
-categories: jekyll update
-tags: [Vue.js] 
-excerpt: template模板编译
----
-
 ## $mount
 
 首先看一下mount的代码

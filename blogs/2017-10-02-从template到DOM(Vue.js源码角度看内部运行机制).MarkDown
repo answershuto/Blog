@@ -1,12 +1,3 @@
----
-layout: post
-title:  "从template到DOM"
-date:   2017-10-02 9:10:00 +0800
-categories: jekyll update
-tags: [Vue.js] 
-excerpt: Vue.js源码角度看内部运行机制
----
-
 ## 从new一个Vue对象开始
 
 ```javascript

@@ -1,12 +1,3 @@
----
-layout: post
-title:  "fetch无法携带用户登陆session（cookie）的问题"
-date:   2017-01-04 20:52:00 +0800
-categories: jekyll update
-tags: [nodeJS] 
-excerpt: fetch无法携带用户登陆session（cookie）的问题
----
-
 #  fetch无法携带用户登陆session（cookie）的问题
 
 第一次用fetch模块来操作ajax请求，在写登陆交互的时候遇到了这个问题。

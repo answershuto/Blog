@@ -1,14 +1,3 @@
----
-layout: post
-title:  "JavaScript设计模式（ES6）"
-date:   2016-11-24 22:53:00 +0800
-categories: jekyll update
-tags: [javascript] 
-excerpt: 用es6实现常用设计模式.
----
-
-
-
 # JavsScript design pattern (ES6)
 
 [●工厂模式](#factory)

@@ -1,12 +1,3 @@
----
-layout: post
-title:  "用canvas＋jquery实现贪吃蛇游戏"
-date:   2016-06-05 19:21:00 +0800
-categories: jekyll update
-tags: [HTML5 canvas jquery bootsrap] 
-excerpt: 用canvas＋jquery实现了一个简单的贪吃蛇游戏
----
-
 最近学习了一下canvas的简单应用，就突然萌生了用canvas加jquery来写一个简单的贪吃蛇游戏的念头。写得比较随意并且匆忙，下班回来两个晚上做出来了，没有好好地设计整个工程以及模块之间的关系，之后也发现了好一些代码设计的问题，但是不影响功能，也最终懒得再去修改了。
 
 直接上源码吧，已上传至我的github，在Games工程下，后续可能还会写一点有意思的小游戏玩玩，统一放在这个工程下面。
