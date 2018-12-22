@@ -4,8 +4,6 @@
 
 [《染陌的2017年度总结》](/blogs/染陌的2017年度总结.MarkDown)
 
-[《染陌的2017年度总结》](/blogs/染陌的2017年度总结.MarkDown)
-
 [《聊聊keep-alive组件的使用及其实现原理》](/blogs/聊聊keep-alive组件的使用及其实现原理.MarkDown)
 
 [《说说element组件库broadcast与dispatch》](/blogs/说说element组件库broadcast与dispatch.MarkDown)
