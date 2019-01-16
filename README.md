@@ -1,5 +1,7 @@
 用来记录学习过程以及分享技术所得的个人blog
 
+[《染陌足迹——13届D2前端技术论坛》](/blogs/染陌足迹——13届D2前端技术论坛.MarkDown)
+
 [《染陌足迹——SeeConf2019》](/blogs/染陌足迹——SeeConf2019.MarkDown)
 
 [《(译)React hooks：它不是一种魔法，只是一个数组——使用图表揭秘提案规则》](/blogs/(译)Reacthooks：它不是一种魔法，只是一个数组——使用图表揭秘提案规则.MarkDown)
