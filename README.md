@@ -1,5 +1,7 @@
 用来记录学习过程以及分享技术所得的个人blog
 
+[《染陌的2018年度总结》](/blogs/染陌的2018年度总结.MarkDown)
+
 [《染陌足迹——13届D2前端技术论坛》](/blogs/染陌足迹——13届D2前端技术论坛.MarkDown)
 
 [《染陌足迹——SeeConf2019》](/blogs/染陌足迹——SeeConf2019.MarkDown)
