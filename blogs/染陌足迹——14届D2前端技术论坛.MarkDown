@@ -1,0 +1,135 @@
+友情提示：这不是一篇技术文章，极有可能是一篇流水账，多图预警！
+
+还在 D2 现场的时候在知乎上占了个坑，拖延症晚期的我现在才来填坑（抖
+
+时间过得很快，一直感觉上一届 D2 才过去没多久，一晃又是一年了。今年的冬天一点也不冷，太阳不大却格外舒服。起了一个大早从城西赶到了城东，周六的文一西路隧道还是出现了一些拥堵，好在作为老司机车技精湛，一路漂移过弯，踩着九点到了场，越来越佩服自己对时间的精准把控。害羞！
+
+来 D2 一个是看看别的团队都在做什么，学习学习。另一个也是想见见平时网上的“老网友”们，面面基（挖挖人）。
+
+赶紧打个卡！！！不然白来了！！！（逃
+PS：此处要感谢摄影师房姐
+
+![](https://img.alicdn.com/tfs/TB1bbtEqND1gK0jSZFKXXcJrVXa-1280-854.png)
+
+### 开场致辞
+
+刚好赶上圆心老板的开场致辞，圆心老板介绍了大会的几个方向以未来前端的主战场，未来的前端挑战与机遇并存。
+
+![](https://img.alicdn.com/tfs/TB1f08DqSf2gK0jSZFPXXXsopXa-1200-800.png)
+
+### 正题
+
+因为对微前端这块比较感兴趣，所以上午一直都在三号场听微前端相关得的主题。
+
+第一场是阿里云智能的克军带来的“云生态新物种——微前端架构体系”。
+
+克军的人气特别高，我们从一号场换到三号场的时候已经座无虚席，甚至我站着也很难找到比较好的地方了。
+
+![](https://img.alicdn.com/tfs/TB11jxIqNz1gK0jSZSgXXavwpXa-1922-1444.png)
+
+首先，克军介绍了微前端的背景以及发展历程。
+
+![](https://img.alicdn.com/tfs/TB1FUNLqKL2gK0jSZFmXXc7iXXa-2292-1240.png)
+
+接着介绍了微前端的工程价值。
+
+![](https://img.alicdn.com/tfs/TB1ahdJqHr1gK0jSZFDXXb9yVXa-1926-1310.png)
+
+微应用容器所需具备的能力。
+
+![](https://img.alicdn.com/tfs/TB14AlKqFP7gK0jSZFjXXc5aXXa-1844-1036.png)
+
+然后克军说了一下微前端以及前端组件的差别。
+
+![](https://img.alicdn.com/tfs/TB1o8BNqQT2gK0jSZFkXXcIQFXa-1910-1186.png)
+
+笔者补充：其实这个话题之前在内部也发起过一次讨论，大家也各有各的思考。微前端场景主要有两种：一是一个大的巨石应用，隔离各个技术栈无关的子应用，二是一个或者多个平台通过微前端来将服务化能力输出，提供一个介于 open api 之上的，更加粗粒度的 UI 编排能力，也有输出给二方或三方平台的能力，需要考虑隔离以及加载等能力。
+
+最后是微前端的业务价值，特别认同克军的一句话——“如果微前端只有工程价值的话，是不值得大张旗鼓去做的”。
+
+![](https://img.alicdn.com/tfs/TB1VqdKqUT1gK0jSZFrXXcNCXXa-1906-1300.png)
+
+接着第二场是蚂蚁金服的有知带来的“标准微前端架构在蚂蚁的落地实践”
+
+首先有知向我们展示了目前一些系统的问题，一些陈年的老项目组成的巨石应用，导致各种体验问题，各种跳转以及流程过长。
+
+![](https://img.alicdn.com/tfs/TB1OO8OqHj1gK0jSZFOXXc7GpXa-872-456.png)
+
+![](https://img.alicdn.com/tfs/TB1kQxLqQL0gK0jSZFAXXcA9pXa-1176-660.png)
+
+微前端架构类型以及能力。
+
+![](https://img.alicdn.com/tfs/TB1inBPqKH2gK0jSZJnXXaT1FXa-1920-858.png)
+
+接着有知从协议开发、路由、应用导入机制、应用隔离以及通信几个角度来讲述技术栈无关性。
+
+协议开发
+
+![](https://img.alicdn.com/tfs/TB1RaNMqHr1gK0jSZR0XXbP8XXa-1624-910.png)
+
+应用隔离又分成 CSS 以及 JS 两个维度进行讲解，CSS 的远离是动态加载（卸载）样式表，JS 则实现了一套沙箱机制。
+
+![](https://img.alicdn.com/tfs/TB14QXOqKL2gK0jSZFmXXc7iXXa-1870-1024.png)
+
+接着分享了一张微前端的大图。
+
+![](https://img.alicdn.com/tfs/TB1fTRQqKH2gK0jSZJnXXaT1FXa-1914-1016.png)
+
+最后是衡量微前端的标准。通过产品价值（自由组合、统一视觉），品牌价值以及技术价值（研发提效、交付提效）来讲述微前端的价值。
+
+![](https://img.alicdn.com/tfs/TB1dMJPqNv1gK0jSZFFXXb0sXXa-1916-1412.png)
+
+第三场是字节跳动的艾石光带来的“微前端沙盒体系”。
+
+首先艾石光介绍了微前端的沙盒体系。
+
+![](https://img.alicdn.com/tfs/TB1RKlNqHr1gK0jSZR0XXbP8XXa-1922-1226.png)
+
+接着从做什么，像什么，怎么做三个维度介绍了沙盒。
+
+![](https://img.alicdn.com/tfs/TB1aBJMqFP7gK0jSZFjXXc5aXXa-1358-738.png)
+
+![](https://img.alicdn.com/tfs/TB1QIdRqHY1gK0jSZTEXXXDQVXa-1862-1118.png)
+
+中午吃好饭是 996 乐队的表演
+
+![](https://img.alicdn.com/tfs/TB1GoFQqQT2gK0jSZPcXXcKkpXa-1390-924.png)
+
+中午不睡下午崩溃，下午听了两场，主要找朋友们聊聊天（挖挖人）。
+
+下午第一场听了上坡以及吭头分享的“前端工程下一站 IDE”，讲述了 Web IDE 的思路及架构等。
+
+![](https://img.alicdn.com/tfs/TB1iSRSqHj1gK0jSZFuXXcrHpXa-1932-1414.png)
+
+IDE 的应用场景及背景
+
+![](https://img.alicdn.com/tfs/TB1g5tNqQL0gK0jSZFtXXXQCXXa-1924-1380.png)
+
+![](https://img.alicdn.com/tfs/TB1CRFcqF67gK0jSZPfXXahhFXa-1914-1420.png)
+
+第二场本来想去听狼叔分享的，可是人满为患根本进不去，我连门都打不开（哭
+
+于是去了灰常三听了玄寂分享的“实时构建探索之路”。
+
+![](https://img.alicdn.com/tfs/TB14qhTqG61gK0jSZFlXXXDKFXa-1914-1420.png)
+
+茶歇时间依旧是人挤人，除了两块上校鸡块我一无所获，不过找了好多“网友”扯扯淡，聊聊天，还是很开心的。
+
+茶歇之后听了“Serveless 下函数应用架构升级”，由于人太多一直站着就没做记录。
+
+大会结束后匆匆赶回了城西，没有参加夜场还是比较遗憾的，明年也想感受一下夜场。
+
+### 最后
+
+中午跟克军、风驰、朴灵、小胡子哥、贺老、大漠、甄子、裕波等几位大佬一起吃了顿饭。
+我又要单方面宣布认识大佬们了！害羞！
+
+还有一个彩蛋，被房姐偷拍的照片上了推荐位。
+
+![](https://img.alicdn.com/tfs/TB1.XFOqFT7gK0jSZFpXXaTkpXa-1080-1460.png)
+
+害羞！！！
+
+最后，参加大会受益匪浅，感谢主办方，感谢所有工作人员！
+
+重点来了：阿里云智能商业中台体验技术团队长期招 P6 及以上前端，有兴趣的欢迎勾搭，直接私信我或者发我邮箱： ranmo.cy@alibaba-inc.com。[查看详情](https://github.com/aliyunfe/weekly/blob/master/about.md)
