@@ -1,5 +1,7 @@
 用来记录学习过程以及分享技术所得的个人 blog
 
+[《Flutter 手势原理》](/blogs/Flutter手势原理.MarkDown)
+
 [《染陌足迹——14 届 D2 前端技术论坛》](/blogs/染陌足迹——14届D2前端技术论坛.MarkDown)
 
 [《染陌的 2018 年度总结》](/blogs/染陌的2018年度总结.MarkDown)
