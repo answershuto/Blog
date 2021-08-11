@@ -1,3 +1,4 @@
+
 阿里巴巴历时 3 年自研开发的 **Web 渲染引擎** 北海（英文名：Kraken）正式开源，致力打造易扩展，跨平台，高性能的渲染引擎，并已在优酷、大麦、天猫等业务场景中使用。
 
 官网：[https://openkraken.com](https://openkraken.com)
@@ -48,9 +49,7 @@ W3C 标准是互联网最重要的标准之一，也是前端开发者非常熟�
 
 通过对接了 Chrome DevTools Protocol，使开发者可以直接使用非常熟悉的 Chrome DevTools 来调试所开发的页面。无论开发者需要修改 CSS 样式，还是查看 DOM 结构，或者是通过断点调试 JavaScript 代码，都能保证跟 Web 开发一致的调试体验。
 
-
-[embed: devtools.mp4](https://intranetproxy.alipay.com/skylark/lark/0/2021/mp4/99047/1618823007263-921c2fe0-4088-46f8-816f-991bab6bb72f.mp4)
-
+<video autoplay loop="loop" align="center" src="https://kraken.oss-cn-hangzhou.aliyuncs.com/videos/devtools.mp4" controls="controls" width="500" ></video>
 
 ## 渲染一致性
 
@@ -58,8 +57,8 @@ Kraken 的渲染能力是对其 W3C 标准的，所以可以保证跟 Web 渲染
 
 下图是实际业务的截图，从左到右分别是 Kraken（iOS），Kraken（Android）以及 Web 版本，可以看出渲染结果是完全一致的。
 
+<video autoplay loop="loop" align="center" src="https://kraken.oss-cn-hangzhou.aliyuncs.com/videos/youku.mp4" controls="controls" width="500" height="300"></video>
 
-[embed: youku.mp4](https://intranetproxy.alipay.com/skylark/lark/0/2021/mp4/99047/1618823026967-36f8ac4e-bb03-4288-9049-691d6fc38401.mp4)
 
 
 ## 比 Web 更好的体验与能力
@@ -74,17 +73,17 @@ Kraken 的渲染能力是对其 W3C 标准的，所以可以保证跟 Web 渲染
 
 这是一个上万个节点的 demo，左边是 overflow: scroll 的容器，而右边是 display: sliver 的容器，可以看到 sliver 容器在「无限滚动列表」场景下滚动明显流畅很多。左上角有 FPS 的数据，可以看到 display: sliver 的容器 FPS 一直维持正常水平，而 overflow: scroll 的容器 FPS 明显下降。此外，在内存方面也有较大收益。
 
-[embed: sliver.mp4](https://intranetproxy.alipay.com/skylark/lark/0/2021/mp4/99047/1618823042936-7022171d-5a38-4c6a-adf7-349e1c60cdba.mp4)
+<video autoplay loop="loop" align="center" src="https://kraken.oss-cn-hangzhou.aliyuncs.com/videos/sliver.mp4" controls="controls" width="500" height="300"></video>
 
 ### 同步光栅化
 
 在浏览器中，光栅化是异步进行的，进行惯性滚动时，会出现白屏，这个是 WebView 始终无法避免的问题。而借助 Flutter 足够高效的同步光栅化实现，Kraken 可以做到长列表快速滚动不白屏。
 
-[embed: kraken-long-list.mp4](https://intranetproxy.alipay.com/skylark/lark/0/2021/mp4/99047/1618823065533-2f72ba63-db1b-436c-a22d-ee6c0bf9a187.mp4)
+<video autoplay loop="loop" align="center" src="https://kraken.oss-cn-hangzhou.aliyuncs.com/videos/kraken-long-list.mp4" controls="controls" width="500" height="300"></video>
 
 ### 增强的手势能力
 
-Kraken 通过对[常用手势](https://github.com/openkraken/kraken/issues/4)进行内置，使业务开发者使用手势能力的时候，再也不需要引入一个 JavaScript lib 以劫持 Touch event 来做开发了。
+Kraken 通过对[常用手势](http://openkraken.com/guide/advanced/gesture)进行内置，使业务开发者使用手势能力的时候，再也不需要引入一个 JavaScript lib 以劫持 Touch event 来做开发了。
 
 以轻扫手势“swipe”为例，开发者只需要通过以下方式就可以获得一个 element 上默认提供的手势能力。直接使用内置增强的手势能力，能够更快速地开发复杂的可交互应用。
 
@@ -100,7 +99,7 @@ element.addEventLisenter('swipe',(gestureEvent) => {
 
 ### 插件化能力
 
-除了上面的那些超越 Web 的体验与能力以外，Kraken 非常重要的一个特性就是[插件化能力](https://github.com/openkraken/kraken/issues/5)，**插件化能力提供给前端工程师重新定义浏览器能力的机会**，开发者只需要编码一个 Flutter plugin，就可以扩展 Kraken 本身的能力。
+除了上面的那些超越 Web 的体验与能力以外，Kraken 非常重要的一个特性就是[插件化能力](http://openkraken.com/plugins/plugin/introduction)，**插件化能力提供给前端工程师重新定义浏览器能力的机会**，开发者只需要编码一个 Flutter plugin，就可以扩展 Kraken 本身的能力。
 
 通过插件化能力，开发者可以在内部实现许多自定义的标签（譬如说 Camera 或者自定义的视频播放器等），也可以基于性能的考虑将常用的业务组件（譬如说 Slider）下沉到容器层。由于浏览器厂商开发以及标准制定往往是滞后的，用插件化能力开发者可以快速地自定义各种渲染能力，使业务开发可以用到最新的或者增强的各种能力。
 
@@ -123,9 +122,9 @@ element.addEventLisenter('swipe',(gestureEvent) => {
 
 目前 Kraken 在 C 端场景移动设备以及低性能 IoT 设备均有相关业务接入，完全可以使用在实际生产场景。
 
-在优酷 APP 中，Kraken 已经落地了大量业务。以下方所示身份详情页为例，Kraken 改造后启动有了一个质的提升，相较于同个页面的原方案，首屏渲染提升28.4%，帧率提升 8.3%。
+在优酷 APP 中，Kraken 已经落地了大量业务。以下方所示“发电王排行榜”的分会场页面为例，Kraken 改造后启动有了一个质的提升，相较于同个页面的 原方案，首屏渲染提升28.4%，帧率提升 8.3%。
 
-[embed: kraken_vs_prev.mp4](https://intranetproxy.alipay.com/skylark/lark/0/2021/mp4/99047/1618905293873-5dbd5fae-e3a7-4397-aedd-89fb3db32ac3.mp4)
+<video autoplay loop="loop" align="center" src="https://kraken.oss-cn-hangzhou.aliyuncs.com/videos/kraken_vs_prev.mp4" controls="controls" width="500" height="300"></video>
 
 在 IoT 设备上，我们的天猫 U 先业务在线下低性能的 IoT 设备上，Kraken 也有非常不错的表现。在线下相对较复杂的 Slider 等场景下，动画以及交互性能都表现较好，长时间运行应用，内存稳定并无明显增长，保证线下 IoT 应用的稳定性。
 
@@ -157,3 +156,4 @@ kraken 团队期望通过一种公平良好的协作机制，让社区的开发�
 官网：[https://openkraken.com](https://openkraken.com)
 
 Github：[https://github.com/openkraken/kraken](https://github.com/openkraken/kraken)
+
