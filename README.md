@@ -1,4 +1,4 @@
-用来记录学习过程以及分享技术所得的个人 blog
+用来记录学习过程以及分享技术所得的个人 blog。
 
 [《深入解析基于 Flutter 的 Web 渲染引擎「北海 Kraken 」技术原理》](/blogs/深入解析基于Flutter的Web渲染引擎「北海Kraken」技术原理.MarkDown)
 
